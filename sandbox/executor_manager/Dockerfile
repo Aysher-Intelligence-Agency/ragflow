@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bookworm
+FROM python:3.14.1-slim-bookworm
 
 RUN grep -rl 'deb.debian.org' /etc/apt/ | xargs sed -i 's|http[s]*://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' && \
     apt-get update && \
@@ -20,4 +20,3 @@ COPY executor_manager/ .
 RUN uv pip install --system -r requirements.txt
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9385"]
-
