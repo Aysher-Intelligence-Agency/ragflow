@@ -32,6 +32,7 @@ from api.utils.file_utils import filename_type, read_potential_broken_pdf, thumb
 from rag.utils.storage_factory import STORAGE_IMPL
 from api.constants import FILE_NAME_LEN_LIMIT
 
+
 class FileService(CommonService):
     # Service class for managing file operations and storage
     model = File
@@ -492,4 +493,3 @@ class FileService(CommonService):
         if re.search(r"\.(eml)$", filename):
             return ParserType.EMAIL.value
         return default
-
