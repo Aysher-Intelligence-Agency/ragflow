@@ -31,7 +31,7 @@ const ChatContainer = ({ controller }: IProps) => {
   const { conversationId } = useGetChatSearchParams();
   const { data: conversation } = useFetchNextConversation();
   const { data: currentDialog } = useFetchNextDialog();
-    
+
 
   const {
     value,
