@@ -213,7 +213,7 @@ jobs:
                echo -e "SANDBOX_EXECUTOR_MANAGER_PORT=${SANDBOX_EXECUTOR_MANAGER_PORT}" >> .env
                echo -e "SVR_WEB_HTTP_PORT=${SVR_WEB_HTTP_PORT}" >> .env
                echo -e "SVR_WEB_HTTPS_PORT=${SVR_WEB_HTTPS_PORT}" >> .env
-               
+
                echo -e "COMPOSE_PROFILES=\${COMPOSE_PROFILES},tei-cpu" >> .env
                echo -e "TEI_MODEL=BAAI/bge-small-en-v1.5" >> .env
                echo -e "RAGFLOW_IMAGE=${RAGFLOW_IMAGE}" >> .env
@@ -587,7 +587,7 @@ jobs:
           else
             echo ".coverage file not found!"
           fi
-          
+
       - name: Collect ragflow log Elasticsearch
         if: ${{ !cancelled() }}
         run: |

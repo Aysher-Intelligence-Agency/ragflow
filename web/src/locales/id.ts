@@ -288,11 +288,11 @@ export default {
         Jika Anda ingin merangkum sesuatu yang membutuhkan semua konteks dari sebuah artikel and panjang konteks LLM yang dipilih mencakup panjang dokumen, Anda dapat mencoba metode ini.
         </p>`,
       knowledgeGraph: `<p>Format file yang didukung adalah <b>DOCX, EXCEL, PPT, IMAGE, PDF, TXT, MD, JSON, EML</b>
- 
+
      <p>Setelah file dipotong, digunakan potongan untuk mengekstrak grafik pengetahuan dan peta pikiran dari seluruh dokumen. Metode ini menerapkan cara naif untuk memotong file:
      Teks berturut-turut akan dipotong menjadi potongan masing-masing yang berjumlah sekitar 512 token.</p>
      <p>Selanjutnya, potongan akan dikirim ke LLM untuk mengekstrak node dan hubungan dari grafik pengetahuan, dan peta pikiran.</p>
- 
+
      Perhatikan jenis entitas yang perlu Anda tentukan.</p>`,
       useRaptor: 'Gunakan RAPTOR untuk meningkatkan pengambilan',
       useRaptorTip:

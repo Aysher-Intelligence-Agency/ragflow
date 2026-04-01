@@ -140,12 +140,12 @@ Wraps the existing executor_manager implementation. The implementation file is l
 - `max_retries`: Maximum retry attempts (default: 3)
 - `pool_size`: Container pool size (default: 10)
 
-**Languages**: 
+**Languages**:
 - Python
 - Node.js
 - JavaScript
 
-**Security**: 
+**Security**:
 - gVisor (runsc runtime)
 - seccomp
 - read-only filesystem

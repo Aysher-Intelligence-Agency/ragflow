@@ -42,7 +42,7 @@ This flexible pipeline adapts to your data, improving answer quality in RAG.
 
 A **Parser** component converts your files into structured text while preserving layout, tables, headers, and other formatting. Its supported files 8 categories, 23+ formats including PDF, Image, Audio, Video, Email, Spreadsheet (Excel), Word, PPT, HTML, and Markdown. The following are some key configurations:
 
-- For PDF files, choose one of the following: 
+- For PDF files, choose one of the following:
   - **DeepDoc** (Default): RAGFlow's built-in model. Best for scanned documents or complex layouts with tables.
   - **MinerU**: Industry-leading for complex elements like mathematical formulas and intricate layouts.
   - **Naive**: Simple text extraction. Use for clean, text-based PDFs without complex elements.
@@ -71,7 +71,7 @@ The chunker component splits text intelligently. It's goal is to prevent AI cont
 In the current design, if using both Token and Title methods, connect the **Token chunker** component first, then **Title chunker** component. Connecting **Title chunker** directly to **Parser** may cause format errors for Email, Image, Spreadsheet, and Text files.
 :::
 
-## 5. Configure Transformer component 
+## 5. Configure Transformer component
 
 A **Transformer** component is designed to bridge the "Semantic Gap". Generally speaking, it uses AI models to add semantic metadata, making your content more discoverable during retrieval. It has four generation types:
 
@@ -130,4 +130,3 @@ Click **Run** on your pipeline canvas to upload a sample file and see the step-b
 ![](https://raw.githubusercontent.com/infiniflow/ragflow-docs/main/images/dataset_ingestion_settings.png)
 
 *Now, any files uploaded to this dataset will be processed by your custom pipeline.*
-

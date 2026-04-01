@@ -47,4 +47,3 @@ Enabling TOC extraction requires significant memory, computational resources, an
 6. Once configured, turn on the Auto-metadata switch on the Configuration page. All newly uploaded files will have these rules applied during parsing. For files that have already been processed, you must re-parse them to trigger metadata generation. You can then use the filter function to check the metadata generation status of your files.
 
 ![](https://raw.githubusercontent.com/infiniflow/ragflow-docs/main/images/enable_auto_metadata.png)
-
