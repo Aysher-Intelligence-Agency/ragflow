@@ -66,7 +66,7 @@ func migrateTenantLLMPrimaryKey(db *gorm.DB) error {
 	// Check if 'id' column already exists using raw SQL
 	var idColumnExists int64
 	err := db.Raw(`
-		SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+		SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 		WHERE TABLE_NAME = 'tenant_llm' AND COLUMN_NAME = 'id'
 	`).Scan(&idColumnExists).Error
 	if err != nil {
@@ -77,9 +77,9 @@ func migrateTenantLLMPrimaryKey(db *gorm.DB) error {
 		// Check if id is already a primary key with auto_increment
 		var count int64
 		err := db.Raw(`
-			SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_NAME = 'tenant_llm' 
-			AND COLUMN_NAME = 'id' 
+			SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_NAME = 'tenant_llm'
+			AND COLUMN_NAME = 'id'
 			AND EXTRA LIKE '%auto_increment%'
 		`).Scan(&count).Error
 		if err != nil {
@@ -97,7 +97,7 @@ func migrateTenantLLMPrimaryKey(db *gorm.DB) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 		// Check for temp_id column and drop it if exists
 		var tempIdExists int64
-		tx.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+		tx.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			WHERE TABLE_NAME = 'tenant_llm' AND COLUMN_NAME = 'temp_id'`).Scan(&tempIdExists)
 		if tempIdExists > 0 {
 			if err := tx.Exec("ALTER TABLE tenant_llm DROP COLUMN temp_id").Error; err != nil {
@@ -109,7 +109,7 @@ func migrateTenantLLMPrimaryKey(db *gorm.DB) error {
 		if idColumnExists > 0 {
 			// Modify existing id column to be auto_increment primary key
 			if err := tx.Exec(`
-				ALTER TABLE tenant_llm 
+				ALTER TABLE tenant_llm
 				MODIFY COLUMN id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY
 			`).Error; err != nil {
 				return fmt.Errorf("failed to modify id column: %w", err)
@@ -117,7 +117,7 @@ func migrateTenantLLMPrimaryKey(db *gorm.DB) error {
 		} else {
 			// Add id column as auto_increment primary key
 			if err := tx.Exec(`
-				ALTER TABLE tenant_llm 
+				ALTER TABLE tenant_llm
 				ADD COLUMN id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST
 			`).Error; err != nil {
 				return fmt.Errorf("failed to add id column: %w", err)
@@ -126,11 +126,11 @@ func migrateTenantLLMPrimaryKey(db *gorm.DB) error {
 
 		// Add unique index on (tenant_id, llm_factory, llm_name)
 		var idxExists int64
-		tx.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+		tx.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
 			WHERE TABLE_NAME = 'tenant_llm' AND INDEX_NAME = 'idx_tenant_llm_unique'`).Scan(&idxExists)
 		if idxExists == 0 {
 			if err := tx.Exec(`
-				ALTER TABLE tenant_llm 
+				ALTER TABLE tenant_llm
 				ADD UNIQUE INDEX idx_tenant_llm_unique (tenant_id, llm_factory, llm_name)
 			`).Error; err != nil {
 				logger.Warn("Failed to add unique index idx_tenant_llm_unique", zap.Error(err))
@@ -150,7 +150,7 @@ func migrateAddUniqueEmail(db *gorm.DB) error {
 
 	// Check if unique index already exists using raw SQL
 	var count int64
-	db.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+	db.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
 		WHERE TABLE_NAME = 'user' AND INDEX_NAME = 'idx_user_email_unique'`).Scan(&count)
 	if count > 0 {
 		return nil
@@ -192,7 +192,7 @@ func modifyColumnTypes(db *gorm.DB) error {
 	// Helper function to check if column exists
 	columnExists := func(table, column string) bool {
 		var count int64
-		db.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+		db.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			WHERE TABLE_NAME = ? AND COLUMN_NAME = ?`, table, column).Scan(&count)
 		return count > 0
 	}
@@ -266,7 +266,7 @@ func renameColumnIfExists(db *gorm.DB, tableName, oldName, newName string) error
 	// Helper to check if column exists
 	columnExists := func(column string) bool {
 		var count int64
-		db.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+		db.Raw(`SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			WHERE TABLE_NAME = ? AND COLUMN_NAME = ?`, tableName, column).Scan(&count)
 		return count > 0
 	}

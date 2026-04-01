@@ -32,7 +32,7 @@ When tasks require multiple independent steps, you can execute them in parallel 
 - Gathering user preferences from multiple sources
 
 # ==========  RESPONSE FORMAT ==========
-**When you need a tool**  
+**When you need a tool**
 Return ONLY the Json (no additional keys, no commentary, end with `<|stop|>`), such as following:
 [{
   "name": "<tool_name1>",
@@ -55,7 +55,7 @@ Return ONLY:
   "arguments": { /* tool arguments matching its schema */ }
 }...]<|stop|>
 
-**When you are certain the task is solved OR no further information can be obtained**  
+**When you are certain the task is solved OR no further information can be obtained**
 Return ONLY:
 [{
   "name": "complete_task",
@@ -135,4 +135,3 @@ After reflection, emit ONLY ONE of the following:
 
 
 Today is {{ today }}. Remember that success in answering questions accurately is paramount - take all necessary steps to ensure your answer is correct.
-

@@ -8,7 +8,7 @@ sidebar_custom_props: {
 
 # Build Ecommerce customer support agent
 
-This quickstart guides you through building an intelligent e‑commerce customer support agent. The agent uses RAGFlow’s workflow and Agent framework to automatically handle common customer requests such as product comparisons, usage instructions, and installation bookings—providing fast, accurate, and context-aware responses. In the following sections, we will walk you through the process of building an Ecommerce customer support Agent as shown below: 
+This quickstart guides you through building an intelligent e‑commerce customer support agent. The agent uses RAGFlow’s workflow and Agent framework to automatically handle common customer requests such as product comparisons, usage instructions, and installation bookings—providing fast, accurate, and context-aware responses. In the following sections, we will walk you through the process of building an Ecommerce customer support Agent as shown below:
 
 ![](https://raw.githubusercontent.com/infiniflow/ragflow-docs/main/images/ecommerce_cs_agent_entirety.PNG)
 
@@ -20,7 +20,7 @@ This quickstart guides you through building an intelligent e‑commerce customer
 
 ### Prepare datasets
 
-1. Ensure that the above-mentioned sample datasets are downloaded. 
+1. Ensure that the above-mentioned sample datasets are downloaded.
 2. Create two datasets:
    - Product Information
    - User Guide
@@ -30,7 +30,7 @@ This quickstart guides you through building an intelligent e‑commerce customer
 
 ### Create an Agent app
 
-1. Navigate to the **Agent** page, create an Agent app to enter the Agent canvas. 
+1. Navigate to the **Agent** page, create an Agent app to enter the Agent canvas.
    _A **Begin** component will appear on the canvas._
 2. Configure a greeting message in the **Begin** component, for example:
 
@@ -101,5 +101,3 @@ This **Categorize** component uses an LLM to recognize user intent and route the
    - Product comparison questions
    - Usage guidance questions
    - Installation booking requests
-
-

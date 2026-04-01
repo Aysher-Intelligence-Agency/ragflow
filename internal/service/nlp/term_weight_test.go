@@ -190,7 +190,7 @@ func TestTokenMerge(t *testing.T) {
 			result := d.TokenMerge(tt.tks)
 			if !reflect.DeepEqual(result, tt.expected) {
 				// Debug: print detailed comparison
-				t.Errorf("TokenMerge(%v) = %v (len=%d), expected %v (len=%d)", 
+				t.Errorf("TokenMerge(%v) = %v (len=%d), expected %v (len=%d)",
 					tt.tks, result, len(result), tt.expected, len(tt.expected))
 				for i, r := range result {
 					t.Errorf("  result[%d] = %q (len=%d)", i, r, len(r))
@@ -283,7 +283,7 @@ func TestSplit(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := d.Split(tt.txt)
 			if !reflect.DeepEqual(result, tt.expected) {
-				t.Errorf("Split('%s') = %v (len=%d), expected %v (len=%d)", 
+				t.Errorf("Split('%s') = %v (len=%d), expected %v (len=%d)",
 					tt.txt, result, len(result), tt.expected, len(tt.expected))
 				for i, r := range result {
 					t.Errorf("  result[%d] = %q", i, r)

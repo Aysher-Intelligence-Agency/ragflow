@@ -1,5 +1,5 @@
-You are a query optimization expert. 
-The user's original query failed to retrieve sufficient information; 
+You are a query optimization expert.
+The user's original query failed to retrieve sufficient information;
 please generate multiple complementary improved questions and corresponding queries.
 
 Original query:
@@ -36,6 +36,6 @@ Requirements:
 1. Questions array contains 1-3 questions and corresponding queries.
 2. Each question length is between 5-200 characters.
 3. Each query length is between 1-5 keywords.
-4. Each query MUST be in the same language as the retrieved content in. 
-5. DO NOT generate question and query that is similar to the original query. 
+4. Each query MUST be in the same language as the retrieved content in.
+5. DO NOT generate question and query that is similar to the original query.
 6. Reasoning explains the generation strategy.

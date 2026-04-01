@@ -210,13 +210,7 @@ def oceanbase_status():
         status_info = get_oceanbase_status()
         return get_json_result(data=status_info)
     except Exception as e:
-        return get_json_result(
-            data={
-                "status": "error",
-                "message": f"Failed to get OceanBase status: {str(e)}"
-            },
-            code=500
-        )
+        return get_json_result(data={"status": "error", "message": f"Failed to get OceanBase status: {str(e)}"}, code=500)
 
 
 @manager.route("/new_token", methods=["POST"])  # noqa: F821
@@ -372,10 +366,12 @@ def get_config():
                         type: integer 0 means disabled, 1 means enabled
                         description: Whether user registration is enabled
     """
-    return get_json_result(data={
-        "registerEnabled": settings.REGISTER_ENABLED,
-        "disablePasswordLogin": settings.DISABLE_PASSWORD_LOGIN,
-    })
+    return get_json_result(
+        data={
+            "registerEnabled": settings.REGISTER_ENABLED,
+            "disablePasswordLogin": settings.DISABLE_PASSWORD_LOGIN,
+        }
+    )
 
 
 @manager.route("/log_levels", methods=["GET"])  # noqa: F821
@@ -419,6 +415,7 @@ async def set_logger_level():
             description: Log level updated successfully
     """
     from quart import request
+
     data = await request.get_json()
     if not data or "pkg_name" not in data or "level" not in data:
         return get_data_error_result(message="pkg_name and level are required")

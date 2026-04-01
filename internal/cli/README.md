@@ -39,7 +39,7 @@ internal/cli/
 └── contextengine/      # Context Engine (Virtual Filesystem)
     ├── engine.go       # Core engine: path resolution, command routing
     ├── types.go        # Node, Command, Result types
-    ├── provider.go     # Provider interface definition    
+    ├── provider.go     # Provider interface definition
     ├── dataset_provider.go  # Dataset provider implementation
     ├── file_provider.go  # File manager provider implementation
     └── utils.go        # Helper functions
