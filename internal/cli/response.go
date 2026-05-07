@@ -343,5 +343,3 @@ func (r *ContextCatResponse) PrintOut() {
 		fmt.Printf("%d, %s\n", r.Code, r.Message)
 	}
 }
-
-

@@ -26,6 +26,7 @@ from yarl import URL
 from common.log_utils import log_exception
 from common.token_utils import num_tokens_from_string, truncate, total_token_count_from_response
 
+
 class Base(ABC):
     def __init__(self, key, model_name, **kwargs):
         """
@@ -378,18 +379,12 @@ class QWenRerank(Base):
         import dashscope
 
         # Build call parameters
-        call_kwargs = {
-            "api_key": self.api_key,
-            "model": self.model_name,
-            "query": query,
-            "documents": texts,
-            "top_n": len(texts)
-        }
+        call_kwargs = {"api_key": self.api_key, "model": self.model_name, "query": query, "documents": texts, "top_n": len(texts)}
         # qwen3-rerank does not support return_documents parameter
         if not self.model_name.startswith("qwen3-rerank"):
             call_kwargs["return_documents"] = False
-        
-        resp = dashscope.TextReRank.call(**call_kwargs)  
+
+        resp = dashscope.TextReRank.call(**call_kwargs)
 
         rank = np.zeros(len(texts), dtype=float)
         if resp.status_code == HTTPStatus.OK:
@@ -536,23 +531,23 @@ class FuturMixRerank(OpenAI_APIRerank):
 class RAGconRerank(Base):
     """
     RAGcon Rerank Provider - routes through LiteLLM proxy
-    
+
     Assumes LiteLLM proxy supports /rerank endpoint.
     Default Base URL: https://connect.ragcon.ai/v1
     """
+
     _FACTORY_NAME = "RAGcon"
-    
+
     def __init__(self, key, model_name, base_url=None, **kwargs):
         if not base_url:
             base_url = "https://connect.ragcon.com/v1"
-        
+
         self._api_key = key
         self._base_url = base_url
-        
+
         self.headers = {"Content-Type": "application/json", "Authorization": f"Bearer {key}"}
         self.model_name = model_name
-        
-    
+
     def similarity(self, query: str, texts: list):
         # noway to config Ragflow , use fix setting
         texts = [truncate(t, 500) for t in texts]

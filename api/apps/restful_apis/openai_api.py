@@ -29,6 +29,7 @@ from common.metadata_utils import convert_conditions, meta_filter
 from common.token_utils import num_tokens_from_string
 from rag.prompts.generator import chunks_format
 
+
 def _validate_llm_id(llm_id, tenant_id, llm_setting=None):
     if not llm_id:
         return None
@@ -50,6 +51,7 @@ def _validate_llm_id(llm_id, tenant_id, llm_setting=None):
 
 import logging
 from api.utils.reference_metadata_utils import enrich_chunks_with_document_metadata
+
 
 def _build_reference_chunks(reference, include_metadata=False, metadata_fields=None):
     chunks = chunks_format(reference)
@@ -165,6 +167,7 @@ async def openai_chat_completions(chat_id):
     stream_mode = req.get("stream", True)
 
     if stream_mode:
+
         async def streamed_response_generator():
             token_used = 0
             last_ans = {}

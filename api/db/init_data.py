@@ -47,6 +47,7 @@ DEFAULT_SUPERUSER_NICKNAME = os.getenv("DEFAULT_SUPERUSER_NICKNAME", "admin")
 DEFAULT_SUPERUSER_EMAIL = os.getenv("DEFAULT_SUPERUSER_EMAIL", "admin@ragflow.io")
 DEFAULT_SUPERUSER_PASSWORD = os.getenv("DEFAULT_SUPERUSER_PASSWORD", "admin")
 
+
 def init_superuser(nickname=DEFAULT_SUPERUSER_NICKNAME, email=DEFAULT_SUPERUSER_EMAIL, password=DEFAULT_SUPERUSER_PASSWORD, role=UserTenantRole.OWNER):
     if UserService.query(email=email):
         logging.info("User with email %s already exists, skipping initialization.", email)
@@ -71,12 +72,7 @@ def init_superuser(nickname=DEFAULT_SUPERUSER_NICKNAME, email=DEFAULT_SUPERUSER_
         "img2txt_id": settings.IMAGE2TEXT_MDL,
         "rerank_id": settings.RERANK_MDL,
     }
-    usr_tenant = {
-        "tenant_id": user_info["id"],
-        "user_id": user_info["id"],
-        "invited_by": user_info["id"],
-        "role": role
-    }
+    usr_tenant = {"tenant_id": user_info["id"], "user_id": user_info["id"], "invited_by": user_info["id"], "role": role}
 
     tenant_llm = get_init_tenant_llm(user_info["id"])
 
@@ -90,15 +86,14 @@ def init_superuser(nickname=DEFAULT_SUPERUSER_NICKNAME, email=DEFAULT_SUPERUSER_
     TenantService.insert(**tenant)
     UserTenantService.insert(**usr_tenant)
     TenantLLMService.insert_many(tenant_llm)
-    logging.info(
-        f"Super user initialized. email: {email},A default password has been set; changing the password after login is strongly recommended.")
+    logging.info(f"Super user initialized. email: {email},A default password has been set; changing the password after login is strongly recommended.")
 
     if tenant["llm_id"]:
         chat_model_config = get_tenant_default_model_by_type(tenant["id"], LLMType.CHAT)
         chat_mdl = LLMBundle(tenant["id"], chat_model_config)
         msg = asyncio.run(chat_mdl.async_chat(system="", history=[{"role": "user", "content": "Hello!"}], gen_conf={}))
         if msg.find("ERROR: ") == 0:
-            logging.error("'{}' doesn't work. {}".format( tenant["llm_id"], msg))
+            logging.error("'{}' doesn't work. {}".format(tenant["llm_id"], msg))
 
     if tenant["embd_id"]:
         embd_model_config = get_tenant_default_model_by_type(tenant["id"], LLMType.EMBEDDING)
@@ -135,8 +130,12 @@ def init_llm_factory():
     LLMService.filter_delete([LLMService.model.fid == "QAnything"])
     TenantLLMService.filter_update([TenantLLMService.model.llm_factory == "QAnything"], {"llm_factory": "Youdao"})
     TenantLLMService.filter_update([TenantLLMService.model.llm_factory == "cohere"], {"llm_factory": "Cohere"})
-    TenantService.filter_update([1 == 1], {
-        "parser_ids": "naive:General,qa:Q&A,resume:Resume,manual:Manual,table:Table,paper:Paper,book:Book,laws:Laws,presentation:Presentation,picture:Picture,one:One,audio:Audio,email:Email,tag:Tag"})
+    TenantService.filter_update(
+        [1 == 1],
+        {
+            "parser_ids": "naive:General,qa:Q&A,resume:Resume,manual:Manual,table:Table,paper:Paper,book:Book,laws:Laws,presentation:Presentation,picture:Picture,one:One,audio:Audio,email:Email,tag:Tag"
+        },
+    )
     ## insert openai two embedding models to the current openai user.
     # print("Start to insert 2 OpenAI embedding models...")
     tenant_ids = set([row["tenant_id"] for row in TenantLLMService.get_openai_models()])
@@ -157,7 +156,6 @@ def init_llm_factory():
     doc_count = DocumentService.get_all_kb_doc_count()
     for kb_id in KnowledgebaseService.get_all_ids():
         KnowledgebaseService.update_document_number_in_init(kb_id=kb_id, doc_num=doc_count.get(kb_id, 0))
-
 
 
 def add_graph_templates():
@@ -199,6 +197,7 @@ def init_web_data():
     fix_missing_tokenized_memory()
     fix_empty_tenant_model_id()
     logging.info("init web data success:{}".format(time.time() - start_time))
+
 
 def init_table():
     # init system_settings
@@ -325,6 +324,7 @@ def fix_empty_tenant_model_id():
         logging.info(f"Update {update_cnt} tenant_model_id in table tenant.")
     logging.info("Fix empty tenant_model_id done.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     init_web_db()
     init_web_data()

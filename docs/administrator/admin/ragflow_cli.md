@@ -29,9 +29,9 @@ The RAGFlow CLI is a command-line-based system administration tool that offers a
     The default password is admin.
 
     **Parameters:**
-    
+
     - -h: RAGFlow admin server host address
-    
+
     - -p: RAGFlow admin server port
 
 ## Default administrative account

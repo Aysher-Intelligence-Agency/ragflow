@@ -19,6 +19,7 @@ from rag.graphrag.utils import chat_limiter, pack_user_ass_to_openai_messages, s
 from rag.llm.chat_model import Base as CompletionLLM
 from common.token_utils import num_tokens_from_string
 
+
 @dataclass
 class GraphExtractionResult:
     """Unipartite graph extraction result class definition."""

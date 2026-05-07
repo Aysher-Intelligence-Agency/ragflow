@@ -4733,17 +4733,17 @@ curl --request POST \
 
 ##### Request parameters
 
-- `"agent_id"`: (*Body parameter*), `string`, *Required*  
+- `"agent_id"`: (*Body parameter*), `string`, *Required*
   The ID of the associated agent.
-- `"messages"`: (*Body parameter*), `list[object]`, *Required*  
+- `"messages"`: (*Body parameter*), `list[object]`, *Required*
   OpenAI-style chat messages.
-- `"openai-compatible"`: (*Body parameter*), `boolean`, *Required*  
+- `"openai-compatible"`: (*Body parameter*), `boolean`, *Required*
   Must be `true` to enable OpenAI-compatible responses.
-- `"stream"`: (*Body parameter*), `boolean`  
+- `"stream"`: (*Body parameter*), `boolean`
   Whether to return streaming chunks.
-- `"session_id"`: (*Body parameter*), `string`  
+- `"session_id"`: (*Body parameter*), `string`
   Optional existing session ID.
-- `"model"`: (*Body parameter*), `string`  
+- `"model"`: (*Body parameter*), `string`
   Optional compatibility field. The server still routes by `agent_id`.
 
 ##### Response

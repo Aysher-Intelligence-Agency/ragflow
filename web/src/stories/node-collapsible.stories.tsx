@@ -17,7 +17,7 @@ const meta = {
         component: `
 ## Component Description
 
-NodeCollapsible is a specialized component for displaying collapsible content within nodes. 
+NodeCollapsible is a specialized component for displaying collapsible content within nodes.
 It automatically shows only the first 3 items and provides a toggle button to expand/collapse the rest.
 The component is designed to work within the application's node-based UI, such as in agent or data flow canvases.
 
@@ -91,10 +91,10 @@ A toggle button appears at the bottom when there are more than 3 items.
 \`\`\`tsx
 import { NodeCollapsible } from '@/components/collapse';
 
-<NodeCollapsible 
+<NodeCollapsible
   items={[
     'Document Analysis Parser',
-    'Web Search Parser', 
+    'Web Search Parser',
     'Database Query Parser',
     'Image Recognition Parser',
     'Audio Transcription Parser',

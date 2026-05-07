@@ -53,27 +53,31 @@ def _convert_files(file_ids, kb_ids, user_id):
             e, kb = KnowledgebaseService.get_by_id(kb_id)
             if not e:
                 continue
-            doc = DocumentService.insert({
-                "id": get_uuid(),
-                "kb_id": kb.id,
-                "parser_id": FileService.get_parser(file.type, file.name, kb.parser_id),
-                "pipeline_id": kb.pipeline_id,
-                "parser_config": kb.parser_config,
-                "created_by": user_id,
-                "type": file.type,
-                "name": file.name,
-                "suffix": Path(file.name).suffix.lstrip("."),
-                "location": file.location,
-                "size": file.size
-            })
-            File2DocumentService.insert({
-                "id": get_uuid(),
-                "file_id": id,
-                "document_id": doc.id,
-            })
+            doc = DocumentService.insert(
+                {
+                    "id": get_uuid(),
+                    "kb_id": kb.id,
+                    "parser_id": FileService.get_parser(file.type, file.name, kb.parser_id),
+                    "pipeline_id": kb.pipeline_id,
+                    "parser_config": kb.parser_config,
+                    "created_by": user_id,
+                    "type": file.type,
+                    "name": file.name,
+                    "suffix": Path(file.name).suffix.lstrip("."),
+                    "location": file.location,
+                    "size": file.size,
+                }
+            )
+            File2DocumentService.insert(
+                {
+                    "id": get_uuid(),
+                    "file_id": id,
+                    "document_id": doc.id,
+                }
+            )
 
 
-@manager.route('/files/link-to-datasets', methods=['POST'])  # noqa: F821
+@manager.route("/files/link-to-datasets", methods=["POST"])  # noqa: F821
 @login_required
 @validate_request("file_ids", "kb_ids")
 async def convert():
@@ -111,9 +115,7 @@ async def convert():
         # soon as the background task is scheduled.
         loop = asyncio.get_running_loop()
         future = loop.run_in_executor(None, _convert_files, all_file_ids, kb_ids, user_id)
-        future.add_done_callback(
-            lambda f: logging.error("_convert_files failed: %s", f.exception()) if f.exception() else None
-        )
+        future.add_done_callback(lambda f: logging.error("_convert_files failed: %s", f.exception()) if f.exception() else None)
         return get_json_result(data=True)
     except Exception as e:
         return server_error_response(e)

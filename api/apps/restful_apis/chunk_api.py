@@ -157,11 +157,7 @@ async def list_chunks(tenant_id, dataset_id, document_id):
         for chunk_id in sres.ids:
             d = {
                 "id": chunk_id,
-                "content": (
-                    remove_redundant_spaces(sres.highlight[chunk_id])
-                    if question and chunk_id in sres.highlight
-                    else sres.field[chunk_id].get("content_with_weight", "")
-                ),
+                "content": (remove_redundant_spaces(sres.highlight[chunk_id]) if question and chunk_id in sres.highlight else sres.field[chunk_id].get("content_with_weight", "")),
                 "document_id": sres.field[chunk_id]["doc_id"],
                 "docnm_kwd": sres.field[chunk_id]["docnm_kwd"],
                 "important_keywords": sres.field[chunk_id].get("important_kwd", []),
@@ -424,6 +420,7 @@ async def switch_chunks(tenant_id, dataset_id, document_id):
     available_int = int(req["available_int"]) if "available_int" in req else (1 if req.get("available") else 0)
 
     try:
+
         def _switch_sync():
             e, doc = DocumentService.get_by_id(document_id)
             if not e:

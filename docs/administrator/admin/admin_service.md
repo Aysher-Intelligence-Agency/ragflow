@@ -25,7 +25,7 @@ With its unified interface design, the Admin Service combines the convenience of
    python admin/server/admin_server.py
    ```
 
-   The service will start and listen for incoming connections from the CLI on the configured port. 
+   The service will start and listen for incoming connections from the CLI on the configured port.
 
 ### Using docker image
 
@@ -37,4 +37,3 @@ With its unified interface design, the Admin Service combines the convenience of
    ```
 
 2. Start the containers, the service will start and listen for incoming connections from the CLI on the configured port.
-

@@ -48,6 +48,7 @@ warnings.filterwarnings(
 def _install_cv2_stub_if_unavailable():
     try:
         import cv2  # noqa: F401
+
         return
     except Exception:
         pass
@@ -143,12 +144,14 @@ class _StubRetriever:
 def _collect(async_gen):
     async def _run():
         return [ev async for ev in async_gen]
+
     return asyncio.run(_run())
 
 
 # ---------------------------------------------------------------------------
 # Tests for async_ask  (production code path)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.p2
 def test_async_ask_final_event_carries_decorated_answer(monkeypatch):
@@ -164,23 +167,21 @@ def test_async_ask_final_event_carries_decorated_answer(monkeypatch):
     chat_mdl = _StreamingChatModel(llm_answer)
     retriever = _StubRetriever()
 
+    monkeypatch.setattr(dialog_service.KnowledgebaseService, "get_by_ids", lambda _ids: [_KB])
     monkeypatch.setattr(
-        dialog_service.KnowledgebaseService, "get_by_ids", lambda _ids: [_KB]
-    )
-    monkeypatch.setattr(
-        dialog_service, "get_model_config_by_type_and_name",
+        dialog_service,
+        "get_model_config_by_type_and_name",
         lambda _tid, _type, _name: _LLM_CONFIG,
     )
     monkeypatch.setattr(dialog_service, "LLMBundle", lambda _tid, _cfg: chat_mdl)
     monkeypatch.setattr(dialog_service.settings, "retriever", retriever, raising=False)
     monkeypatch.setattr(dialog_service.settings, "kg_retriever", retriever, raising=False)
-    monkeypatch.setattr(
-        dialog_service.DocMetadataService, "get_flatted_meta_by_kbs", lambda _ids: {}
-    )
+    monkeypatch.setattr(dialog_service.DocMetadataService, "get_flatted_meta_by_kbs", lambda _ids: {})
     monkeypatch.setattr(dialog_service, "label_question", lambda _q, _kbs: "")
     # kb_prompt calls DocumentService.get_by_ids which needs a live DB; stub it out.
     monkeypatch.setattr(
-        dialog_service, "kb_prompt",
+        dialog_service,
+        "kb_prompt",
         lambda _kbinfos, _max_tokens, **_kw: ["RAGFlow is a RAG engine."],
     )
 
@@ -195,18 +196,11 @@ def test_async_ask_final_event_carries_decorated_answer(monkeypatch):
     assert events, "async_ask must yield at least one event"
 
     final_events = [e for e in events if e.get("final") is True]
-    assert len(final_events) == 1, (
-        f"Expected exactly one final event, got {len(final_events)}: {final_events}"
-    )
+    assert len(final_events) == 1, f"Expected exactly one final event, got {len(final_events)}: {final_events}"
     final = final_events[0]
 
-    assert final["answer"] != "", (
-        "Final event answer must not be blank — decorate_answer() result was discarded.\n"
-        "This is the regression: final['answer'] = '' was removed from async_ask()."
-    )
-    assert llm_answer in final["answer"], (
-        f"LLM answer text expected in final event, got: {final['answer']!r}"
-    )
+    assert final["answer"] != "", "Final event answer must not be blank — decorate_answer() result was discarded.\nThis is the regression: final['answer'] = '' was removed from async_ask()."
+    assert llm_answer in final["answer"], f"LLM answer text expected in final event, got: {final['answer']!r}"
 
 
 @pytest.mark.p2
@@ -218,22 +212,20 @@ def test_async_ask_delta_events_carry_incremental_text_only(monkeypatch):
     chat_mdl = _StreamingChatModel("Incremental text for delta test.")
     retriever = _StubRetriever()
 
+    monkeypatch.setattr(dialog_service.KnowledgebaseService, "get_by_ids", lambda _ids: [_KB])
     monkeypatch.setattr(
-        dialog_service.KnowledgebaseService, "get_by_ids", lambda _ids: [_KB]
-    )
-    monkeypatch.setattr(
-        dialog_service, "get_model_config_by_type_and_name",
+        dialog_service,
+        "get_model_config_by_type_and_name",
         lambda _tid, _type, _name: _LLM_CONFIG,
     )
     monkeypatch.setattr(dialog_service, "LLMBundle", lambda _tid, _cfg: chat_mdl)
     monkeypatch.setattr(dialog_service.settings, "retriever", retriever, raising=False)
     monkeypatch.setattr(dialog_service.settings, "kg_retriever", retriever, raising=False)
-    monkeypatch.setattr(
-        dialog_service.DocMetadataService, "get_flatted_meta_by_kbs", lambda _ids: {}
-    )
+    monkeypatch.setattr(dialog_service.DocMetadataService, "get_flatted_meta_by_kbs", lambda _ids: {})
     monkeypatch.setattr(dialog_service, "label_question", lambda _q, _kbs: "")
     monkeypatch.setattr(
-        dialog_service, "kb_prompt",
+        dialog_service,
+        "kb_prompt",
         lambda _kbinfos, _max_tokens, **_kw: ["RAGFlow is a RAG engine."],
     )
 
@@ -246,20 +238,19 @@ def test_async_ask_delta_events_carry_incremental_text_only(monkeypatch):
     )
 
     delta_events = [e for e in events if not e.get("final")]
-    final_events  = [e for e in events if e.get("final") is True]
+    final_events = [e for e in events if e.get("final") is True]
 
     assert len(final_events) == 1, f"Expected exactly one final event, got {len(final_events)}"
     for ev in delta_events:
         assert ev["reference"] == {}, f"Delta event must have empty reference, got: {ev['reference']}"
 
-    assert "chunks" in final_events[0]["reference"], (
-        "Final event reference must contain chunk data from decorate_answer()"
-    )
+    assert "chunks" in final_events[0]["reference"], "Final event reference must contain chunk data from decorate_answer()"
 
 
 # ---------------------------------------------------------------------------
 # Tests for async_chat  (production code path)
 # ---------------------------------------------------------------------------
+
 
 def _make_dialog(chat_mdl_stub):
     """Build a minimal dialog SimpleNamespace for async_chat()."""
@@ -309,32 +300,30 @@ def test_async_chat_final_event_carries_decorated_answer(monkeypatch):
     retriever = _StubRetriever()
 
     # Stub out the heavy service/model calls
+    monkeypatch.setattr(dialog_service.TenantLLMService, "llm_id2llm_type", lambda _llm_id: "chat")
     monkeypatch.setattr(
-        dialog_service.TenantLLMService, "llm_id2llm_type", lambda _llm_id: "chat"
-    )
-    monkeypatch.setattr(
-        dialog_service.TenantLLMService, "get_model_config",
+        dialog_service.TenantLLMService,
+        "get_model_config",
         lambda _tid, _type, _llm_id: _LLM_CONFIG,
     )
     monkeypatch.setattr(
-        dialog_service.TenantLangfuseService, "filter_by_tenant",
+        dialog_service.TenantLangfuseService,
+        "filter_by_tenant",
         lambda tenant_id: None,
     )
     # get_models returns (kbs, embd_mdl, rerank_mdl, chat_mdl, tts_mdl)
     monkeypatch.setattr(
-        dialog_service, "get_models",
+        dialog_service,
+        "get_models",
         lambda _dialog: ([_KB], chat_mdl, None, chat_mdl, None),
     )
-    monkeypatch.setattr(
-        dialog_service.KnowledgebaseService, "get_field_map", lambda _kb_ids: {}
-    )
-    monkeypatch.setattr(
-        dialog_service.KnowledgebaseService, "get_by_ids", lambda _ids: [_KB]
-    )
+    monkeypatch.setattr(dialog_service.KnowledgebaseService, "get_field_map", lambda _kb_ids: {})
+    monkeypatch.setattr(dialog_service.KnowledgebaseService, "get_by_ids", lambda _ids: [_KB])
     monkeypatch.setattr(dialog_service.settings, "retriever", retriever, raising=False)
     monkeypatch.setattr(dialog_service, "label_question", lambda _q, _kbs: "")
     monkeypatch.setattr(
-        dialog_service, "kb_prompt",
+        dialog_service,
+        "kb_prompt",
         lambda _kbinfos, _max_tokens, **_kw: ["RAGFlow is a RAG engine."],
     )
 
@@ -344,15 +333,8 @@ def test_async_chat_final_event_carries_decorated_answer(monkeypatch):
     events = _collect(dialog_service.async_chat(dialog, messages, stream=True, quote=True))
 
     final_events = [e for e in events if e.get("final") is True]
-    assert len(final_events) == 1, (
-        f"Expected exactly one final event, got {len(final_events)}: {final_events}"
-    )
+    assert len(final_events) == 1, f"Expected exactly one final event, got {len(final_events)}: {final_events}"
     final = final_events[0]
 
-    assert final["answer"] != "", (
-        "Final event answer must not be blank — decorate_answer() result was discarded.\n"
-        "This is the regression: final['answer'] = '' was removed from async_chat()."
-    )
-    assert llm_answer in final["answer"], (
-        f"LLM answer text expected in final event, got: {final['answer']!r}"
-    )
+    assert final["answer"] != "", "Final event answer must not be blank — decorate_answer() result was discarded.\nThis is the regression: final['answer'] = '' was removed from async_chat()."
+    assert llm_answer in final["answer"], f"LLM answer text expected in final event, got: {final['answer']!r}"

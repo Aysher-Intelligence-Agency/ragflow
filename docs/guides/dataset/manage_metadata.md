@@ -21,7 +21,7 @@ From v0.23.0 onwards, RAGFlow allows you to manage metadata both at the dataset 
 ![](https://raw.githubusercontent.com/infiniflow/ragflow-docs/main/images/click_metadata.png)
 
 
-2. On the **Manage Metadata** page, you can do either of the following: 
+2. On the **Manage Metadata** page, you can do either of the following:
    - Edit Values: You can modify existing values. If you rename two values to be identical, they will be automatically merged.
    - Delete: You can delete specific values or entire fields. These changes will apply to all associated files.
 
@@ -45,5 +45,3 @@ From v0.23.0 onwards, RAGFlow allows you to manage metadata both at the dataset 
 -   **Automatic** Mode: The system automatically filters documents based on the user's query and the existing metadata in the knowledge base.
 -   **Semi-automatic** Mode: Users first define the filtering scope at the field level (e.g., for **Author**), and then the system automatically filters within that preset range.
 -   **Manual** Mode: Users manually set precise, value-specific filter conditions, supported by operators such as **Equals**, **Not equals**, **In**, **Not in**, and more.
-
-

@@ -7,7 +7,7 @@ sidebar_custom_props: {
 ---
 # HTTP request component
 
-A component that calls remote services. 
+A component that calls remote services.
 
 ---
 

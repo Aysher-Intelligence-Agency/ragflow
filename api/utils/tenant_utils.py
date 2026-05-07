@@ -26,6 +26,7 @@ _KEY_TO_MODEL_TYPE = {
     "tts_id": LLMType.TTS,
 }
 
+
 def ensure_tenant_model_id_for_params(tenant_id: str, param_dict: dict, *, strict: bool = False) -> dict:
     for key in ["llm_id", "embd_id", "asr_id", "img2txt_id", "rerank_id", "tts_id"]:
         if param_dict.get(key) and not param_dict.get(f"tenant_{key}"):
@@ -38,8 +39,6 @@ def ensure_tenant_model_id_for_params(tenant_id: str, param_dict: dict, *, stric
             else:
                 if strict:
                     model_type_val = model_type.value if hasattr(model_type, "value") else model_type
-                    raise ArgumentException(
-                        f"Tenant Model with name {param_dict[key]} and type {model_type_val} not found"
-                    )
+                    raise ArgumentException(f"Tenant Model with name {param_dict[key]} and type {model_type_val} not found")
                 param_dict.update({f"tenant_{key}": 0})
     return param_dict
