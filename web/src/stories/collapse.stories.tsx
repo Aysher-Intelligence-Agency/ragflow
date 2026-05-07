@@ -113,8 +113,8 @@ export const WithRightContent: Story = {
 import { Collapse } from '@/components/collapse';
 import { Button } from '@/components/ui/button';
 
-<Collapse 
-  title="Collapse Title" 
+<Collapse
+  title="Collapse Title"
   rightContent={<Button size="sm">Action</Button>}
 >
   <div className="p-4 border border-gray-200 rounded-md">

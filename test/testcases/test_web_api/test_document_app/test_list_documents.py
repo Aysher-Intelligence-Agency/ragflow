@@ -46,7 +46,6 @@ class TestDocumentsList:
         assert len(res["data"]["docs"]) == 5
         assert res["data"]["total"] == 5
 
-
     @pytest.mark.p1
     @pytest.mark.parametrize(
         "params, expected_code, expected_page_size, expected_message",
@@ -216,4 +215,3 @@ class TestDocumentsList:
             res = list_documents(WebApiAuth, {"kb_id": kb_id, "create_time_from": create_time + 1000, "create_time_to": create_time + 2000})
             assert res["code"] == 0
             assert len(res["data"]["docs"]) == 0
-

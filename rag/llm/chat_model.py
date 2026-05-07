@@ -1860,7 +1860,7 @@ class LiteLLMBase(ABC):
         if self.provider == SupportedLiteLLMProvider.Ollama and self.api_key and "Authorization" not in extra_headers:
             extra_headers["Authorization"] = f"Bearer {self.api_key}"
         # MiniMax requires GroupId as a query parameter for API authentication
-        if self.provider == SupportedLiteLLMProvider.MiniMax and hasattr(self, 'group_id') and self.group_id:
+        if self.provider == SupportedLiteLLMProvider.MiniMax and hasattr(self, "group_id") and self.group_id:
             api_base = completion_args.get("api_base", self.base_url)
             separator = "&" if "?" in api_base else "?"
             completion_args["api_base"] = f"{api_base}{separator}GroupId={self.group_id}"

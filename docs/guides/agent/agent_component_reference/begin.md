@@ -27,7 +27,7 @@ Mode defines how the workflow is triggered.
 
 - Conversational: The agent is triggered from a conversation.
 - Task: The agent starts without a conversation.
-- Webhook: Receive external HTTP requests via webhooks, enabling automated triggers and workflow initiation.  
+- Webhook: Receive external HTTP requests via webhooks, enabling automated triggers and workflow initiation.
   *When selected, a unique Webhook URL is generated for the current agent.*
 
 ![](https://raw.githubusercontent.com/infiniflow/ragflow-docs/main/images/webhook_mode.png)
@@ -43,7 +43,7 @@ The authentication method to choose, available *only* when **Webhook** is select
 
 - **token**: Token-based authentication.
 - **basic**: Basic authentication.
-- **jwt**: JWT authentication.  
+- **jwt**: JWT authentication.
 
 ### Schema
 
@@ -61,7 +61,7 @@ The schema defines the data structure for HTTP requests received by the system i
 
 ### Response
 
-Available only when **Webhook** is selected as **Mode**. 
+Available only when **Webhook** is selected as **Mode**.
 
 The response mode of the workflow, i.e., how the workflow respond to external HTTP requests. Supported options:
 
@@ -82,9 +82,9 @@ An agent in conversational mode begins with an opening greeting. It is the agent
 
 You can define global variables within the **Begin** component, which can be either mandatory or optional. Once set, users will need to provide values for these variables when engaging with the agent. Click **+ Add variable** to add a global variable, each with the following attributes:
 
-- **Name**: _Required_  
-  A descriptive name providing additional details about the variable.  
-- **Type**: _Required_  
+- **Name**: _Required_
+  A descriptive name providing additional details about the variable.
+- **Type**: _Required_
   The type of the variable:
   - **Single-line text**: Accepts a single line of text without line breaks.
   - **Paragraph text**: Accepts multiple lines of text, including line breaks.
@@ -92,7 +92,7 @@ You can define global variables within the **Begin** component, which can be eit
   - **file upload**: Requires the user to upload one or multiple files.
   - **Number**: Accepts a number as input.
   - **Boolean**: Requires the user to toggle between on and off.
-- **Key**: _Required_  
+- **Key**: _Required_
   The unique variable name.
 - **Optional**: A toggle indicating whether the variable is optional.
 

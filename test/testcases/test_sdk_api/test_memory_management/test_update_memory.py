@@ -31,19 +31,18 @@ class TestAuthorization:
             (None, "<Unauthorized '401: Unauthorized'>"),
             (INVALID_API_TOKEN, "<Unauthorized '401: Unauthorized'>"),
         ],
-        ids=["empty_auth", "invalid_api_token"]
+        ids=["empty_auth", "invalid_api_token"],
     )
     def test_auth_invalid(self, invalid_auth, expected_message):
-
         with pytest.raises(Exception) as exception_info:
             client = RAGFlow(invalid_auth, HOST_ADDRESS)
             memory = Memory(client, {"id": "memory_id"})
             memory.update({"name": "New_Name"})
         assert str(exception_info.value) == expected_message, str(exception_info.value)
 
+
 @pytest.mark.usefixtures("add_memory_func")
 class TestMemoryUpdate:
-
     @pytest.mark.p1
     @given(name=valid_names())
     @example("f" * 128)
@@ -62,7 +61,7 @@ class TestMemoryUpdate:
             ("", "Memory name cannot be empty or whitespace."),
             (" ", "Memory name cannot be empty or whitespace."),
             ("a" * 129, f"Memory name '{'a' * 129}' exceeds limit of 128."),
-        ]
+        ],
     )
     def test_name_invalid(self, client, name, expected_message):
         memory_ids = self.memory_ids
@@ -112,14 +111,7 @@ class TestMemoryUpdate:
         assert res.llm_id == llm_id, str(res)
 
     @pytest.mark.p2
-    @pytest.mark.parametrize(
-        "permission",
-        [
-            "me",
-            "team"
-        ],
-        ids=["me", "team"]
-    )
+    @pytest.mark.parametrize("permission", ["me", "team"], ids=["me", "team"])
     def test_permission(self, client, permission):
         memory_ids = self.memory_ids
         update_dict = {"permissions": permission}

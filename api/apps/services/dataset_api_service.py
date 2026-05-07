@@ -447,8 +447,8 @@ def delete_knowledge_graph(dataset_id: str, tenant_id: str):
     _, kb = KnowledgebaseService.get_by_id(dataset_id)
     from rag.nlp import search
     from rag.graphrag.phase_markers import clear_phase_markers
-    settings.docStoreConn.delete({"knowledge_graph_kwd": ["graph", "subgraph", "entity", "relation", "community_report"]},
-                                 search.index_name(kb.tenant_id), dataset_id)
+
+    settings.docStoreConn.delete({"knowledge_graph_kwd": ["graph", "subgraph", "entity", "relation", "community_report"]}, search.index_name(kb.tenant_id), dataset_id)
     # Wiping the graph invalidates any phase-completion markers used to
     # short-circuit resolution / community detection on resume.
     clear_phase_markers(dataset_id)
@@ -818,8 +818,8 @@ def delete_index(dataset_id: str, tenant_id: str, index_type: str, wipe: bool = 
     if wipe and index_type == "graph":
         from rag.nlp import search
         from rag.graphrag.phase_markers import clear_phase_markers
-        settings.docStoreConn.delete({"knowledge_graph_kwd": ["graph", "subgraph", "entity", "relation", "community_report"]},
-                                     search.index_name(kb.tenant_id), dataset_id)
+
+        settings.docStoreConn.delete({"knowledge_graph_kwd": ["graph", "subgraph", "entity", "relation", "community_report"]}, search.index_name(kb.tenant_id), dataset_id)
         # Wiping the graph invalidates any phase-completion markers used to
         # short-circuit resolution / community detection on resume.
         clear_phase_markers(dataset_id)

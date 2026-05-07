@@ -68,4 +68,3 @@ async def download_attachment(attachment_id):
 
     except Exception as e:
         return server_error_response(e)
-

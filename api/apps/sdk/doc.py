@@ -43,8 +43,10 @@ from api.utils.reference_metadata_utils import (
     resolve_reference_metadata_preferences,
 )
 
+
 def _resolve_reference_metadata(req: dict, search_config: dict | None = None):
     return resolve_reference_metadata_preferences(req, search_config)
+
 
 def _enrich_chunks_with_document_metadata(chunks: list[dict], metadata_fields=None) -> None:
     enrich_chunks_with_document_metadata(chunks, metadata_fields)

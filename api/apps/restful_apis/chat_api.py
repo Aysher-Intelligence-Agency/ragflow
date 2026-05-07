@@ -53,8 +53,8 @@ from rag.prompts.template import load_prompt
 
 _DEFAULT_PROMPT_CONFIG = {
     "system": (
-        'You are an intelligent assistant. Please summarize the content of the dataset to answer the question. '
-        'Please list the data in the dataset and answer in detail. When all dataset content is irrelevant to the '
+        "You are an intelligent assistant. Please summarize the content of the dataset to answer the question. "
+        "Please list the data in the dataset and answer in detail. When all dataset content is irrelevant to the "
         'question, your answer must include the sentence "The answer you are looking for is not found in the dataset!" '
         "Answers need to consider chat history.\n"
         "      Here is the knowledge base:\n"
@@ -129,9 +129,7 @@ def _build_session_response(conv: dict) -> dict:
 
 
 def _ensure_owned_chat(chat_id):
-    return DialogService.query(
-        tenant_id=current_user.id, id=chat_id, status=StatusEnum.VALID.value
-    )
+    return DialogService.query(tenant_id=current_user.id, id=chat_id, status=StatusEnum.VALID.value)
 
 
 def _build_default_completion_dialog():
@@ -232,7 +230,7 @@ def _validate_dataset_ids(dataset_ids, tenant_id):
 
     embd_ids = [TenantLLMService.split_model_name_and_factory(kb.embd_id)[0] for kb in kbs]
     if len(set(embd_ids)) > 1:
-        return f'Datasets use different embedding models: {[kb.embd_id for kb in kbs]}'
+        return f"Datasets use different embedding models: {[kb.embd_id for kb in kbs]}"
 
     return normalized_ids
 
@@ -351,22 +349,16 @@ def list_chats():
         items_per_page = int(request.args.get("page_size", 0))
 
         if owner_ids:
-            chats, total = DialogService.get_by_tenant_ids(
-                owner_ids, current_user.id, 0, 0, orderby, desc, keywords, **exact_filters
-            )
+            chats, total = DialogService.get_by_tenant_ids(owner_ids, current_user.id, 0, 0, orderby, desc, keywords, **exact_filters)
             chats = [chat for chat in chats if chat["tenant_id"] in owner_ids]
             total = len(chats)
             if page_number and items_per_page:
                 start = (page_number - 1) * items_per_page
                 chats = chats[start : start + items_per_page]
         else:
-            chats, total = DialogService.get_by_tenant_ids(
-                [], current_user.id, page_number, items_per_page, orderby, desc, keywords, **exact_filters
-            )
+            chats, total = DialogService.get_by_tenant_ids([], current_user.id, page_number, items_per_page, orderby, desc, keywords, **exact_filters)
 
-        return get_json_result(
-            data={"chats": [_build_chat_response(chat) for chat in chats], "total": total}
-        )
+        return get_json_result(data={"chats": [_build_chat_response(chat) for chat in chats], "total": total})
     except Exception as ex:
         return server_error_response(ex)
 
@@ -377,9 +369,7 @@ def get_chat(chat_id):
     try:
         tenants = UserTenantService.query(user_id=current_user.id)
         for tenant in tenants:
-            if DialogService.query(
-                tenant_id=tenant.tenant_id, id=chat_id, status=StatusEnum.VALID.value
-            ):
+            if DialogService.query(tenant_id=tenant.tenant_id, id=chat_id, status=StatusEnum.VALID.value):
                 break
         else:
             return get_json_result(
@@ -400,9 +390,7 @@ def get_chat(chat_id):
 @login_required
 async def update_chat(chat_id):
     if not _ensure_owned_chat(chat_id):
-        return get_json_result(
-            data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR
-        )
+        return get_json_result(data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR)
 
     try:
         req = await get_request_json()
@@ -486,9 +474,7 @@ async def update_chat(chat_id):
 @login_required
 async def patch_chat(chat_id):
     if not _ensure_owned_chat(chat_id):
-        return get_json_result(
-            data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR
-        )
+        return get_json_result(data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR)
 
     try:
         req = await get_request_json()
@@ -577,9 +563,7 @@ async def patch_chat(chat_id):
 @login_required
 def delete_chat(chat_id):
     if not _ensure_owned_chat(chat_id):
-        return get_json_result(
-            data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR
-        )
+        return get_json_result(data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR)
 
     try:
         if not DialogService.update_by_id(chat_id, {"status": StatusEnum.INVALID.value}):
@@ -599,12 +583,7 @@ async def bulk_delete_chats():
     ids = req.get("ids")
     if not ids:
         if req.get("delete_all") is True:
-            ids = [
-                chat.id
-                for chat in DialogService.query(
-                    tenant_id=current_user.id, status=StatusEnum.VALID.value
-                )
-            ]
+            ids = [chat.id for chat in DialogService.query(tenant_id=current_user.id, status=StatusEnum.VALID.value)]
             if not ids:
                 return get_json_result(data={})
         else:
@@ -689,9 +668,7 @@ def list_sessions(chat_id):
         session_id = request.args.get("id")
         name = request.args.get("name")
         user_id = request.args.get("user_id")
-        convs = ConversationService.get_list(
-            chat_id, page_number, items_per_page, orderby, desc, session_id, name, user_id
-        )
+        convs = ConversationService.get_list(chat_id, page_number, items_per_page, orderby, desc, session_id, name, user_id)
         if items_per_page == 0:
             convs = []
         return get_json_result(data=[_build_session_response(c) for c in convs])
@@ -921,17 +898,21 @@ async def transcription():
     uploaded = files["file"]
 
     ALLOWED_EXTS = {
-        ".wav", ".mp3", ".m4a", ".aac",
-        ".flac", ".ogg", ".webm",
-        ".opus", ".wma",
+        ".wav",
+        ".mp3",
+        ".m4a",
+        ".aac",
+        ".flac",
+        ".ogg",
+        ".webm",
+        ".opus",
+        ".wma",
     }
 
     filename = uploaded.filename or ""
     suffix = os.path.splitext(filename)[-1].lower()
     if suffix not in ALLOWED_EXTS:
-        return get_data_error_result(
-            message=f"Unsupported audio format: {suffix}. Allowed: {', '.join(sorted(ALLOWED_EXTS))}"
-        )
+        return get_data_error_result(message=f"Unsupported audio format: {suffix}. Allowed: {', '.join(sorted(ALLOWED_EXTS))}")
 
     fd, temp_audio_path = tempfile.mkstemp(suffix=suffix)
     os.close(fd)

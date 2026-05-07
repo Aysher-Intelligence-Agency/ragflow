@@ -104,7 +104,7 @@ The script has three mutually exclusive modes:
    ```bash
    # Using config file
    python mysql_migration.py --stages tenant_model_provider --config config.yaml
-   
+
    # Using command line MySQL connection
    python mysql_migration.py --stages tenant_model_provider --host localhost --port 3306 --user root
    ```

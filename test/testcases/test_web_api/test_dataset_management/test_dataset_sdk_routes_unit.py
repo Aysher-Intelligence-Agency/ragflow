@@ -419,9 +419,7 @@ def _load_dataset_module(monkeypatch):
     def _parse_args(*_args, **_kwargs):
         return {"name": "", "page": 1, "page_size": 30, "orderby": "create_time", "desc": True}, None
 
-    validation_spec = importlib.util.spec_from_file_location(
-        "api.utils.validation_utils", repo_root / "api" / "utils" / "validation_utils.py"
-    )
+    validation_spec = importlib.util.spec_from_file_location("api.utils.validation_utils", repo_root / "api" / "utils" / "validation_utils.py")
     validation_mod = importlib.util.module_from_spec(validation_spec)
     monkeypatch.setitem(sys.modules, "api.utils.validation_utils", validation_mod)
     validation_spec.loader.exec_module(validation_mod)
@@ -853,4 +851,3 @@ def test_delete_index_wipe_flag_unit(monkeypatch):
     assert res["code"] == module.RetCode.SUCCESS, res
     assert len(deleted) == 1, f"default wipe must call docStore.delete once: {deleted}"
     assert cleared_phase_markers == ["kb-1"], cleared_phase_markers
-

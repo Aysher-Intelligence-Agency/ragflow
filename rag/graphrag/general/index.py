@@ -53,7 +53,6 @@ from common import settings
 from common.doc_store.doc_store_base import OrderByExpr
 
 
-
 async def load_subgraph_from_store(tenant_id: str, kb_id: str, doc_id: str):
     """Load a previously saved subgraph from the doc store.
 
@@ -69,11 +68,7 @@ async def load_subgraph_from_store(tenant_id: str, kb_id: str, doc_id: str):
         "source_id": [doc_id],
     }
     try:
-        res = await thread_pool_exec(
-            settings.docStoreConn.search,
-            fields, [], condition, [], OrderByExpr(),
-            0, 1, search.index_name(tenant_id), [kb_id]
-        )
+        res = await thread_pool_exec(settings.docStoreConn.search, fields, [], condition, [], OrderByExpr(), 0, 1, search.index_name(tenant_id), [kb_id])
         field_map = settings.docStoreConn.get_fields(res, fields)
         for cid, row in field_map.items():
             content = row.get("content_with_weight", "")
@@ -85,19 +80,22 @@ async def load_subgraph_from_store(tenant_id: str, kb_id: str, doc_id: str):
                 sg.graph["source_id"] = [doc_id]
                 logging.info(
                     "Checkpoint hit: subgraph for doc %s (tenant=%s kb=%s) found at chunk %s",
-                    doc_id, tenant_id, kb_id, cid,
+                    doc_id,
+                    tenant_id,
+                    kb_id,
+                    cid,
                 )
                 return sg
             except Exception:
-                logging.exception(
-                    "Failed to parse subgraph JSON for doc %s chunk %s", doc_id, cid
-                )
+                logging.exception("Failed to parse subgraph JSON for doc %s chunk %s", doc_id, cid)
     except Exception:
         logging.exception("Failed to load subgraph from store for doc %s", doc_id)
         return None
     logging.info(
         "Checkpoint miss: no subgraph for doc %s (tenant=%s kb=%s)",
-        doc_id, tenant_id, kb_id,
+        doc_id,
+        tenant_id,
+        kb_id,
     )
     return None
 
@@ -123,9 +121,7 @@ async def run_graphrag(
     try:
         subgraph = await asyncio.wait_for(
             generate_subgraph(
-                LightKGExt if "method" not in row["kb_parser_config"].get("graphrag", {})
-                    or row["kb_parser_config"]["graphrag"]["method"] != "general"
-                else GeneralKGExt,
+                LightKGExt if "method" not in row["kb_parser_config"].get("graphrag", {}) or row["kb_parser_config"]["graphrag"]["method"] != "general" else GeneralKGExt,
                 tenant_id,
                 kb_id,
                 doc_id,
@@ -243,14 +239,16 @@ async def run_graphrag_for_kb(
         current_chunk = ""
 
         # DEBUG: Obtener todos los chunks primero
-        raw_chunks = list(settings.retriever.chunk_list(
-            doc_id,
-            tenant_id,
-            [kb_id],
-            max_count=10000,  # FIX: Aumentar límite para procesar todos los chunks
-            fields=fields_for_chunks,
-            sort_by_position=True,
-        ))
+        raw_chunks = list(
+            settings.retriever.chunk_list(
+                doc_id,
+                tenant_id,
+                [kb_id],
+                max_count=10000,  # FIX: Aumentar límite para procesar todos los chunks
+                fields=fields_for_chunks,
+                sort_by_position=True,
+            )
+        )
 
         callback(msg=f"[DEBUG] chunk_list() returned {len(raw_chunks)} raw chunks for doc {doc_id}")
 
@@ -322,7 +320,7 @@ async def run_graphrag_for_kb(
                             chat_model,
                             embedding_model,
                             callback,
-                            task_id=row["id"]
+                            task_id=row["id"],
                         ),
                         timeout=deadline,
                     )
@@ -564,8 +562,18 @@ async def generate_subgraph(
         "removed_kwd": "N",
     }
     cid = chunk_id(chunk)
-    await thread_pool_exec(settings.docStoreConn.delete,{"knowledge_graph_kwd": "subgraph", "source_id": doc_id},search.index_name(tenant_id),kb_id,)
-    await thread_pool_exec(settings.docStoreConn.insert,[{"id": cid, **chunk}],search.index_name(tenant_id),kb_id,)
+    await thread_pool_exec(
+        settings.docStoreConn.delete,
+        {"knowledge_graph_kwd": "subgraph", "source_id": doc_id},
+        search.index_name(tenant_id),
+        kb_id,
+    )
+    await thread_pool_exec(
+        settings.docStoreConn.insert,
+        [{"id": cid, **chunk}],
+        search.index_name(tenant_id),
+        kb_id,
+    )
     now = asyncio.get_running_loop().time()
     callback(msg=f"generated subgraph for doc {doc_id} in {now - start:.2f} seconds.")
     return subgraph
@@ -715,8 +723,15 @@ async def extract_community(
     try:
         existing_res = await thread_pool_exec(
             settings.docStoreConn.search,
-            ["id"], [], {"knowledge_graph_kwd": ["community_report"]}, [], OrderByExpr(),
-            0, 10000, search.index_name(tenant_id), [kb_id],
+            ["id"],
+            [],
+            {"knowledge_graph_kwd": ["community_report"]},
+            [],
+            OrderByExpr(),
+            0,
+            10000,
+            search.index_name(tenant_id),
+            [kb_id],
         )
         existing_fields = settings.docStoreConn.get_fields(existing_res, ["id"])
         old_ids = list(existing_fields.keys())

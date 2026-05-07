@@ -447,6 +447,7 @@ class Parser(ProcessBase):
                 if not tenant_id:
                     return None
                 from api.db.services.tenant_llm_service import TenantLLMService
+
                 env_name = TenantLLMService.ensure_opendataloader_from_env(tenant_id)
                 candidates = TenantLLMService.query(tenant_id=tenant_id, llm_factory="OpenDataLoader", model_type=LLMType.OCR.value)
                 if candidates:
@@ -644,7 +645,7 @@ class Parser(ProcessBase):
             layout = re.sub(r"\s+", " ", raw_layout) if has_layout else "text"
             b["layout_type"] = layout
             if conf.get("remove_header_footer") and re.search(r"(header|footer|number)", raw_layout, re.I):
-                continue 
+                continue
             if flatten_media_to_text:
                 b["doc_type_kwd"] = "text"
             elif layout == "table":
@@ -795,7 +796,7 @@ class Parser(ProcessBase):
         conf = self._param.setups["docx"]
         self.set_output("output_format", conf["output_format"])
         flatten_media_to_text = conf.get("flatten_media_to_text")
-        
+
         if re.search(r"\.doc$", name, re.IGNORECASE):
             self.set_output("file", {**kwargs.get("file", {}), "outlines": []})
             try:
@@ -984,11 +985,7 @@ class Parser(ProcessBase):
                     # If multiple images found, combine them using concat_img
                     combined_image = reduce(concat_img, images) if len(images) > 1 else images[0]
                     json_result["image"] = combined_image
-                json_result["doc_type_kwd"] = (
-                    "text"
-                    if flatten_media_to_text or json_result.get("image") is None
-                    else "image"
-                )
+                json_result["doc_type_kwd"] = "text" if flatten_media_to_text or json_result.get("image") is None else "image"
                 json_results.append(json_result)
 
             for table in tables:
@@ -1018,7 +1015,7 @@ class Parser(ProcessBase):
         self.callback(random.randint(1, 5) / 100.0, "Start to work on a text or code file.")
         conf = self._param.setups["text&code"]
         self.set_output("output_format", conf["output_format"])
-        
+
         sections = TxtParser()(
             name,
             blob,
