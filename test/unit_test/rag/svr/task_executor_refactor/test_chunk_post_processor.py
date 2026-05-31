@@ -276,9 +276,7 @@ class TestGenerateMetadata:
 
                             await generate_metadata(docs, ctx)
 
-                            ctx.write_interceptor.intercept.assert_called_once_with(
-                                "DocMetadataService.update_document_metadata"
-                            )
+                            ctx.write_interceptor.intercept.assert_called_once_with("DocMetadataService.update_document_metadata")
 
 
 class TestApplyTags:

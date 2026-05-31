@@ -150,7 +150,7 @@ class _PsiUnionFind:
     @property
     def tree(self) -> list[int]:
         """Return the compact child-to-parent array for constructed nodes."""
-        return self._tree[:self._next_id]
+        return self._tree[: self._next_id]
 
 
 class RecursiveAbstractiveProcessing4TreeOrganizedRetrieval:
@@ -209,7 +209,7 @@ class RecursiveAbstractiveProcessing4TreeOrganizedRetrieval:
                 response = re.sub(r"^.*</think>", "", response, flags=re.DOTALL)
                 if response.find("**ERROR**") >= 0:
                     raise Exception(response)
-                await thread_pool_exec(set_llm_cache,self._llm_model.llm_name,system,response,history,gen_conf)
+                await thread_pool_exec(set_llm_cache, self._llm_model.llm_name, system, response, history, gen_conf)
                 return response
             except Exception as exc:
                 last_exc = exc
@@ -399,10 +399,7 @@ class RecursiveAbstractiveProcessing4TreeOrganizedRetrieval:
             split_groups = [group[labels == center_id].tolist() for center_id in range(fanout)]
             split_groups = [bucket for bucket in split_groups if bucket]
             if len(split_groups) <= 1:
-                split_groups = [
-                    group[start:start + self._psi_bucket_size].tolist()
-                    for start in range(0, len(group), self._psi_bucket_size)
-                ]
+                split_groups = [group[start : start + self._psi_bucket_size].tolist() for start in range(0, len(group), self._psi_bucket_size)]
             groups.extend(split_groups)
 
         buckets = [bucket for bucket in buckets if bucket]
@@ -448,7 +445,7 @@ class RecursiveAbstractiveProcessing4TreeOrganizedRetrieval:
                 original_children = len(node.children)
                 grouped_children = []
                 for start in range(0, len(node.children), max_children):
-                    batch = node.children[start:start + max_children]
+                    batch = node.children[start : start + max_children]
                     if len(batch) == 1:
                         grouped_children.append(batch[0])
                         batch[0].parent = node
@@ -555,10 +552,7 @@ class RecursiveAbstractiveProcessing4TreeOrganizedRetrieval:
 
     def _build_psi_structure(self, chunks, task_id: str = "") -> tuple[_PsiTreeNode, list[_PsiTreeNode]]:
         """Build the Psi merge tree from original chunk embeddings."""
-        leaves = [
-            _PsiTreeNode(index=i, text=text, embedding=np.asarray(embd))
-            for i, (text, embd) in enumerate(chunks)
-        ]
+        leaves = [_PsiTreeNode(index=i, text=text, embedding=np.asarray(embd)) for i, (text, embd) in enumerate(chunks)]
         if len(leaves) == 1:
             return leaves[0], leaves
 

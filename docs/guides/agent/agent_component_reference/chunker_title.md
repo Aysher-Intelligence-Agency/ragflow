@@ -48,7 +48,7 @@ Treats the first split as a global heading to maintain consistent context across
 
 #### H3
 
-Specifies the heading level to define chunk boundaries: 
+Specifies the heading level to define chunk boundaries:
 
 - H1
 - H2

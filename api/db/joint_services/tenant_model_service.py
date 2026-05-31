@@ -26,7 +26,7 @@ from api.db.services.tenant_model_service import TenantModelService
 logger = logging.getLogger(__name__)
 
 
-def get_tenant_default_model_by_type(tenant_id: str, model_type: str|enum.Enum):
+def get_tenant_default_model_by_type(tenant_id: str, model_type: str | enum.Enum):
     exist, tenant = TenantService.get_by_id(tenant_id)
     if not exist:
         raise LookupError("Tenant not found")
@@ -36,7 +36,7 @@ def get_tenant_default_model_by_type(tenant_id: str, model_type: str|enum.Enum):
         case LLMType.EMBEDDING.value:
             model_name = tenant.embd_id
         case LLMType.SPEECH2TEXT.value:
-            model_name =  tenant.asr_id
+            model_name = tenant.asr_id
         case LLMType.IMAGE2TEXT.value:
             model_name = tenant.img2txt_id
         case LLMType.CHAT.value:
@@ -72,16 +72,13 @@ def split_model_name(model_name: str):
     return pure_model_name, instance_name, provider_name
 
 
-def get_model_config_from_provider_instance(tenant_id, model_type: str|enum.Enum, model_name: str):
+def get_model_config_from_provider_instance(tenant_id, model_type: str | enum.Enum, model_name: str):
     pure_model_name, instance_name, provider_name = split_model_name(model_name)
     model_type_val = model_type if isinstance(model_type, str) else model_type.value
     # Builtin embedding model
     compose_profiles = os.getenv("COMPOSE_PROFILES", "")
     is_tei_builtin_embedding = (
-            model_type_val == LLMType.EMBEDDING.value
-            and "tei-" in compose_profiles
-            and pure_model_name == os.getenv("TEI_MODEL", "")
-            and (provider_name == "Builtin" or provider_name is None)
+        model_type_val == LLMType.EMBEDDING.value and "tei-" in compose_profiles and pure_model_name == os.getenv("TEI_MODEL", "") and (provider_name == "Builtin" or provider_name is None)
     )
     if is_tei_builtin_embedding:
         # configured local embedding model
@@ -103,6 +100,7 @@ def get_model_config_from_provider_instance(tenant_id, model_type: str|enum.Enum
     model_obj = TenantModelService.get_by_provider_id_and_instance_id_and_model_type_and_model_name(provider_obj.id, instance_obj.id, model_type_val, pure_model_name)
 
     import json
+
     api_key, is_tool, api_key_payload = TenantLLMService._decode_api_key_config(instance_obj.api_key)
     extra_fields = json.loads(instance_obj.extra) if instance_obj.extra else {}
 
@@ -116,7 +114,7 @@ def get_model_config_from_provider_instance(tenant_id, model_type: str|enum.Enum
             "llm_name": model_obj.model_name,
             "api_base": extra_fields.get("base_url", ""),
             "model_type": model_obj.model_type,
-            "is_tool": extra_fields.get("is_tool", is_tool)
+            "is_tool": extra_fields.get("is_tool", is_tool),
         }
         if api_key_payload is not None:
             model_config["api_key_payload"] = api_key_payload
@@ -136,7 +134,7 @@ def get_model_config_from_provider_instance(tenant_id, model_type: str|enum.Enum
             "llm_name": llm_info["llm_name"],
             "api_base": extra_fields.get("base_url", ""),
             "model_type": llm_info["model_type"],
-            "is_tool": llm_info.get("is_tool", is_tool)
+            "is_tool": llm_info.get("is_tool", is_tool),
         }
         if api_key_payload is not None:
             model_config["api_key_payload"] = api_key_payload

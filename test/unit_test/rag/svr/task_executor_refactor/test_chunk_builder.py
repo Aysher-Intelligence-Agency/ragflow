@@ -29,11 +29,26 @@ from rag.svr.task_executor_refactor.chunk_builder import (
 class TestGetParser:
     """Tests for get_parser function."""
 
-    @pytest.mark.parametrize("parser_id", [
-        "naive", "general", "table", "paper", "book",
-        "picture", "audio", "email", "presentation", "manual",
-        "laws", "qa", "resume", "one", "tag",
-    ])
+    @pytest.mark.parametrize(
+        "parser_id",
+        [
+            "naive",
+            "general",
+            "table",
+            "paper",
+            "book",
+            "picture",
+            "audio",
+            "email",
+            "presentation",
+            "manual",
+            "laws",
+            "qa",
+            "resume",
+            "one",
+            "tag",
+        ],
+    )
     def test_get_parser_returns_non_none(self, parser_id):
         """Test that get_parser returns non-None for all parser types."""
         parser = get_parser(parser_id)
@@ -42,6 +57,7 @@ class TestGetParser:
     def test_get_parser_kg(self):
         """Test getting kg parser (maps to naive)."""
         from common.constants import ParserType
+
         parser = get_parser(ParserType.KG.value)
         assert parser is not None
 
@@ -194,9 +210,7 @@ class TestExtractOutline:
 
         await extract_outline(cks, ctx)
 
-        ctx.write_interceptor.intercept.assert_called_once_with(
-            "DocMetadataService.update_document_metadata"
-        )
+        ctx.write_interceptor.intercept.assert_called_once_with("DocMetadataService.update_document_metadata")
 
     @pytest.mark.asyncio
     async def test_extract_outline_persistence_exception(self):

@@ -108,9 +108,7 @@ class TestPostProcessorInsertTocChunk:
         result = await service.insert_toc_chunk(toc_chunk, chunk_service)
 
         assert result is True
-        chunk_service.insert_chunks.assert_called_once_with(
-            "task_1", "tenant_1", "kb_1", [toc_chunk]
-        )
+        chunk_service.insert_chunks.assert_called_once_with("task_1", "tenant_1", "kb_1", [toc_chunk])
 
     @pytest.mark.asyncio
     async def test_handles_insert_failure(self):

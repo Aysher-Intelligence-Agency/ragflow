@@ -33,6 +33,7 @@ from rag.utils.table_es_metadata import (
     table_parser_strip_doc_metadata_keys,
 )
 
+
 class PostProcessor:
     """Service for post-indexing operations.
 
@@ -69,9 +70,7 @@ class PostProcessor:
             return
 
         eff_pc = merge_table_parser_config_from_kb(ctx.raw_task)
-        logging.debug(
-            f"[TABLE_META_DEBUG] table post-index: table_column_mode={eff_pc.get('table_column_mode')!r}"
-        )
+        logging.debug(f"[TABLE_META_DEBUG] table post-index: table_column_mode={eff_pc.get('table_column_mode')!r}")
 
         if eff_pc.get("table_column_mode") != "manual":
             return

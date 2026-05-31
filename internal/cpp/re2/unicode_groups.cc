@@ -6508,5 +6508,3 @@ const int num_unicode_groups = 199;
 
 
 }  // namespace re2
-
-

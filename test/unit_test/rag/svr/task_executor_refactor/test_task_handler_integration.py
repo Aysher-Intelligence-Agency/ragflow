@@ -78,13 +78,13 @@ def create_task_context(
     # Add progress_callback property for task_handler compatibility
     ctx.progress_callback = progress_callback
     # Add set_progress_cb method for task_handler compatibility
-    ctx.set_progress_cb = lambda cb: setattr(ctx.callbacks, 'progress_cb', cb)
+    ctx.set_progress_cb = lambda cb: setattr(ctx.callbacks, "progress_cb", cb)
     return ctx
 
 
 # Common patcher for _get_storage_binary since it imports settings internally
 def patch_get_storage_binary():
-    return patch.object(TaskHandler, '_get_storage_binary', new_callable=AsyncMock, return_value=b"fake pdf binary")
+    return patch.object(TaskHandler, "_get_storage_binary", new_callable=AsyncMock, return_value=b"fake pdf binary")
 
 
 def patch_task_handler_settings(mock_settings):
@@ -129,19 +129,20 @@ class TestStandardChunkingPipelineIntegration:
         mock_settings = create_mock_settings()
         mock_chunk_service = create_mock_chunk_service()
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -174,19 +175,20 @@ class TestStandardChunkingPipelineIntegration:
         mock_settings = create_mock_settings()
         mock_chunk_service = create_mock_chunk_service()
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -220,20 +222,21 @@ class TestStandardChunkingPipelineIntegration:
         mock_chunks = create_default_chunks(count=3)
         mock_chunk_service = create_mock_chunk_service(chunks=mock_chunks)
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.run_toc_from_text", new_callable=AsyncMock) as mock_run_toc, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.run_toc_from_text", new_callable=AsyncMock) as mock_run_toc,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -268,19 +271,20 @@ class TestStandardChunkingPipelineIntegration:
         mock_settings = create_mock_settings()
         mock_chunk_service = create_mock_chunk_service()
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -317,19 +321,20 @@ class TestStandardChunkingPipelineIntegration:
         mock_settings = create_mock_settings()
         mock_chunk_service = create_mock_chunk_service()
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -391,21 +396,22 @@ class TestTaskCancellationCleanupIntegration:
             # Get the actual method name from the mock
             func_repr = repr(func)
             call_log.append(func_repr)
-            if 'index_exist' in func_repr:
+            if "index_exist" in func_repr:
                 return True
-            if 'delete' in func_repr:
+            if "delete" in func_repr:
                 return {"result": "deleted"}
             return {"result": "deleted"}
 
-        with patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name", return_value="test_index"), \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec", side_effect=mock_thread_impl):
-
+        with (
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name", return_value="test_index"),
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec", side_effect=mock_thread_impl),
+        ):
             handler = TaskHandler(ctx=ctx)
             await handler.handle_task()
 
             # Verify delete was called by checking the call log
-            delete_calls = [c for c in call_log if 'delete' in c]
+            delete_calls = [c for c in call_log if "delete" in c]
             assert len(delete_calls) >= 1, f"Expected at least one delete call, got: {call_log}"
 
     @pytest.mark.asyncio
@@ -417,16 +423,17 @@ class TestTaskCancellationCleanupIntegration:
 
         def mock_thread_impl(func, *args, **kwargs):
             func_repr = repr(func)
-            if 'index_exist' in func_repr:
+            if "index_exist" in func_repr:
                 return True
-            if 'delete' in func_repr:
+            if "delete" in func_repr:
                 return {"result": "deleted"}
             return {"result": "deleted"}
 
-        with patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name", return_value="test_index"), \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec", side_effect=mock_thread_impl):
-
+        with (
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name", return_value="test_index"),
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec", side_effect=mock_thread_impl),
+        ):
             handler = TaskHandler(ctx=ctx)
             await handler.handle_task()
 
@@ -454,13 +461,14 @@ class TestTaskCancellationCleanupIntegration:
         ctx = create_task_context(task_dict, is_canceled=True)
         mock_settings = create_mock_settings()
 
-        with patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default:
-
+        with (
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+        ):
             mock_index_name.return_value = "test_index"
             mock_settings.docStoreConn.index_exist.return_value = True
             mock_settings.docStoreConn.delete.return_value = {"result": "deleted"}
@@ -512,18 +520,19 @@ class TestRaptorPipelineIntegration:
         mock_kb.id = "kb_test"
         mock_kb.parser_config = {"raptor": {"use_raptor": False}}
 
-        with patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.KnowledgebaseService") as mock_kb_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.RaptorService") as mock_raptor_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service:
-
+        with (
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.KnowledgebaseService") as mock_kb_service,
+            patch("rag.svr.task_executor_refactor.task_handler.RaptorService") as mock_raptor_service,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -557,18 +566,19 @@ class TestRaptorPipelineIntegration:
         mock_kb.id = "kb_test"
         mock_kb.parser_config = {"raptor": {"use_raptor": False}}
 
-        with patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.KnowledgebaseService") as mock_kb_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.RaptorService") as mock_raptor_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service:
-
+        with (
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.KnowledgebaseService") as mock_kb_service,
+            patch("rag.svr.task_executor_refactor.task_handler.RaptorService") as mock_raptor_service,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -591,8 +601,7 @@ class TestRaptorPipelineIntegration:
             mock_kb_service.update_by_id.assert_called_once()
             call_args = mock_kb_service.update_by_id.call_args
             update_dict = call_args[0][1]
-            assert update_dict.get("parser_config", {}).get("raptor", {}).get("use_raptor") is True, \
-                "RAPTOR should be enabled in parser_config after running"
+            assert update_dict.get("parser_config", {}).get("raptor", {}).get("use_raptor") is True, "RAPTOR should be enabled in parser_config after running"
 
 
 class TestEmbeddingModelBindingFailureIntegration:
@@ -625,9 +634,10 @@ class TestEmbeddingModelBindingFailureIntegration:
         task_dict = self._create_standard_task_dict()
         ctx = create_task_context(task_dict)
 
-        with patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default:
-
+        with (
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+        ):
             mock_get_config.side_effect = Exception("Model not found")
             mock_get_default.side_effect = Exception("Model not found")
 
@@ -642,9 +652,10 @@ class TestEmbeddingModelBindingFailureIntegration:
         task_dict = self._create_standard_task_dict()
         ctx = create_task_context(task_dict)
 
-        with patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default:
-
+        with (
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+        ):
             mock_get_config.side_effect = Exception("Model not found")
             mock_get_default.side_effect = Exception("Model not found")
 
@@ -752,21 +763,22 @@ class TestTocAsyncFlowIntegration:
         mock_settings = create_mock_settings()
         mock_chunk_service = create_mock_chunk_service()
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.run_toc_from_text", new_callable=AsyncMock) as mock_run_toc, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls, \
-             patch("rag.svr.task_executor_refactor.post_processor.DocumentService") as mock_post_doc_service:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.run_toc_from_text", new_callable=AsyncMock) as mock_run_toc,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+            patch("rag.svr.task_executor_refactor.post_processor.DocumentService") as mock_post_doc_service,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -803,7 +815,7 @@ class TestTocAsyncFlowIntegration:
     @pytest.mark.filterwarnings("ignore::pytest.PytestUnraisableExceptionWarning")
     async def test_toc_async_flow_does_not_create_thread_when_disabled(self):
         """Verify that TOC async flow does not create a thread when disabled.
-        
+
         Note: This test has a known issue with resource leaks (unclosed sockets and
         event loops) when run as part of the full test suite. The warning filter
         above suppresses these warnings temporarily. The root cause is related to
@@ -818,20 +830,21 @@ class TestTocAsyncFlowIntegration:
         mock_settings = create_mock_settings()
         mock_chunk_service = create_mock_chunk_service()
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.run_toc_from_text", new_callable=AsyncMock) as mock_run_toc, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.run_toc_from_text", new_callable=AsyncMock) as mock_run_toc,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -907,19 +920,20 @@ class TestRecordingContextDataFlowAssertions:
         mock_settings = create_mock_settings()
         mock_chunk_service = create_mock_chunk_service()
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding
@@ -941,8 +955,7 @@ class TestRecordingContextDataFlowAssertions:
 
             recording_ctx = ctx.recording_context
             file_size_exceeded = recording_ctx.get("file_size_exceeded")
-            assert file_size_exceeded is None or file_size_exceeded is False, \
-                f"Expected file_size_exceeded to be False/None for small file, got {file_size_exceeded}"
+            assert file_size_exceeded is None or file_size_exceeded is False, f"Expected file_size_exceeded to be False/None for small file, got {file_size_exceeded}"
 
     @pytest.mark.asyncio
     async def test_recording_context_captures_parser_id(self):
@@ -953,19 +966,20 @@ class TestRecordingContextDataFlowAssertions:
         mock_settings = create_mock_settings()
         mock_chunk_service = create_mock_chunk_service()
 
-        with patch_get_storage_binary(), \
-             patch_task_handler_settings(mock_settings), \
-             patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings), \
-             patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config, \
-             patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle, \
-             patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default, \
-             patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec, \
-             patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec, \
-             patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service, \
-             patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name, \
-             patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls:
-
+        with (
+            patch_get_storage_binary(),
+            patch_task_handler_settings(mock_settings),
+            patch("rag.svr.task_executor_refactor.chunk_service.settings", mock_settings),
+            patch("rag.svr.task_executor_refactor.task_handler.get_model_config_from_provider_instance") as mock_get_config,
+            patch("rag.svr.task_executor_refactor.task_handler.LLMBundle") as mock_bundle,
+            patch("rag.svr.task_executor_refactor.task_handler.get_tenant_default_model_by_type") as mock_get_default,
+            patch("rag.svr.task_executor_refactor.task_handler.File2DocumentService") as mock_file_service,
+            patch("rag.svr.task_executor_refactor.task_handler.thread_pool_exec") as mock_thread_exec,
+            patch("rag.svr.task_executor_refactor.chunk_service.thread_pool_exec") as mock_chunk_thread_exec,
+            patch("rag.svr.task_executor_refactor.task_handler.DocumentService") as mock_doc_service,
+            patch("rag.svr.task_executor_refactor.task_handler.search.index_name") as mock_index_name,
+            patch("rag.svr.task_executor_refactor.task_handler.ChunkService") as mock_chunk_service_cls,
+        ):
             mock_get_config.return_value = MagicMock()
             mock_get_default.return_value = MagicMock()
             mock_bundle.return_value = mock_embedding

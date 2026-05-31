@@ -4644,7 +4644,7 @@ curl --request POST \
   Variables specified in the **Begin** component.
 - `"user_id"`: (*Body parameter*), `string`
   The optional user-defined ID. Valid *only* when no `session_id` is provided.
-- `"chat_template_kwargs"`: (*Body parameter*), `object`  
+- `"chat_template_kwargs"`: (*Body parameter*), `object`
   Optional passthrough parameters for the underlying LLM's chat template. Commonly used to toggle thinking/reasoning modes on supported models (e.g., `{"enable_thinking": false}`).
 
 :::tip NOTE
@@ -4769,19 +4769,19 @@ curl --request POST \
 
 ##### Request parameters
 
-- `"agent_id"`: (*Body parameter*), `string`, *Required*  
+- `"agent_id"`: (*Body parameter*), `string`, *Required*
   The ID of the associated agent.
-- `"messages"`: (*Body parameter*), `list[object]`, *Required*  
+- `"messages"`: (*Body parameter*), `list[object]`, *Required*
   OpenAI-style chat messages.
-- `"openai-compatible"`: (*Body parameter*), `boolean`, *Required*  
+- `"openai-compatible"`: (*Body parameter*), `boolean`, *Required*
   Must be `true` to enable OpenAI-compatible responses.
-- `"stream"`: (*Body parameter*), `boolean`  
+- `"stream"`: (*Body parameter*), `boolean`
   Whether to return streaming chunks.
-- `"session_id"`: (*Body parameter*), `string`  
+- `"session_id"`: (*Body parameter*), `string`
   Optional existing session ID.
-- `"model"`: (*Body parameter*), `string`  
+- `"model"`: (*Body parameter*), `string`
   Optional compatibility field. The server still routes by `agent_id`.
-- `"chat_template_kwargs"`: (*Body parameter*), `object`  
+- `"chat_template_kwargs"`: (*Body parameter*), `object`
   Optional passthrough parameters for the underlying LLM's chat template. Commonly used to toggle thinking/reasoning modes on supported models (e.g., `{"enable_thinking": false}`).
 
 ##### Response

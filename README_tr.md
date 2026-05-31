@@ -42,7 +42,7 @@
   <a href="https://cloud.ragflow.io">Cloud</a> |
   <a href="https://ragflow.io/docs/dev/">Dokümantasyon</a> |
   <a href="https://github.com/infiniflow/ragflow/issues/12241">Yol Haritası</a> |
-  <a href="https://discord.gg/NjYzJD3GM3">Discord</a> 
+  <a href="https://discord.gg/NjYzJD3GM3">Discord</a>
 </h4>
 
 <div align="center" style="margin-top:20px;margin-bottom:20px;">

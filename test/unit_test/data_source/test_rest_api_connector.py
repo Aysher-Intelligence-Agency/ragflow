@@ -52,13 +52,17 @@ def _mocked_rest_api_requests_and_dns():
     that wrap `requests.get` / `requests.post` and avoid retry backoff delays.
     """
     mock_rl = MagicMock()
-    with patch(
-        "common.data_source.rest_api_connector.socket.getaddrinfo",
-        return_value=_MOCK_DNS_ADDRINFO,
-    ), patch.object(_ds_utils._RateLimitedRequest, "get", mock_rl.get), patch.object(
-        _ds_utils._RateLimitedRequest,
-        "post",
-        mock_rl.post,
+    with (
+        patch(
+            "common.data_source.rest_api_connector.socket.getaddrinfo",
+            return_value=_MOCK_DNS_ADDRINFO,
+        ),
+        patch.object(_ds_utils._RateLimitedRequest, "get", mock_rl.get),
+        patch.object(
+            _ds_utils._RateLimitedRequest,
+            "post",
+            mock_rl.post,
+        ),
     ):
         yield mock_rl
 
@@ -107,6 +111,7 @@ def _mock_response(json_data, status_code=200):
 # 1. Config schema validation                                           #
 # ===================================================================== #
 
+
 class TestRestAPIConfig:
     """Test Pydantic RestAPIConnectorConfig schema validation."""
 
@@ -139,9 +144,7 @@ class TestRestAPIConfig:
 
     def test_string_to_dict_coercion_for_headers(self):
         """A key=value string should be coerced to a dict."""
-        cfg = RestAPIConnectorConfig(
-            url=VALID_URL, content_fields=["t"], headers="X-Custom=hello"
-        )
+        cfg = RestAPIConnectorConfig(url=VALID_URL, content_fields=["t"], headers="X-Custom=hello")
         assert cfg.headers == {"X-Custom": "hello"}
 
     def test_string_to_list_coercion_for_content_fields(self):
@@ -153,6 +156,7 @@ class TestRestAPIConfig:
 # ===================================================================== #
 # 2. SSRF URL validation                                                #
 # ===================================================================== #
+
 
 class TestSSRFValidation:
     """Test that unsafe URLs are blocked before any HTTP request is made."""
@@ -212,11 +216,11 @@ class TestSSRFValidation:
 # 3. Authentication setup                                               #
 # ===================================================================== #
 
+
 class TestAuthSetup:
     """Test _build_auth produces the correct headers / auth objects."""
 
-    @patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-           return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
+    @patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
     def test_auth_none(self, _dns):
         """auth_type=none should produce no auth headers."""
         c = _make_connector(auth_type=AuthType.NONE)
@@ -224,8 +228,7 @@ class TestAuthSetup:
         assert c._auth_headers == {}
         assert c._basic_auth is None
 
-    @patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-           return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
+    @patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
     def test_api_key_header(self, _dns):
         """api_key_header should set the specified header."""
         c = _make_connector(
@@ -235,16 +238,14 @@ class TestAuthSetup:
         c.load_credentials({"api_key": "secret123"})
         assert c._auth_headers == {"X-API-Key": "secret123"}
 
-    @patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-           return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
+    @patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
     def test_bearer_token(self, _dns):
         """bearer should set Authorization: Bearer <token>."""
         c = _make_connector(auth_type=AuthType.BEARER)
         c.load_credentials({"token": "tok_abc"})
         assert c._auth_headers == {"Authorization": "Bearer tok_abc"}
 
-    @patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-           return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
+    @patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
     def test_basic_auth(self, _dns):
         """basic should produce an HTTPBasicAuth object."""
         c = _make_connector(auth_type=AuthType.BASIC)
@@ -258,14 +259,13 @@ class TestAuthSetup:
 # 4. Field extraction                                                   #
 # ===================================================================== #
 
+
 class TestFieldExtraction:
     """Test _extract_field / _extract_field_values dot-notation paths."""
 
-    @patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-           return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
+    @patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
     def setup_method(self, method, _dns=None):
-        with patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-                    return_value=[(2, 1, 6, "", ("93.184.216.34", 0))]):
+        with patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))]):
             self.connector = _make_connector()
 
     def test_simple_field(self):
@@ -289,8 +289,7 @@ class TestFieldExtraction:
 
     def test_missing_field_with_default(self):
         """Missing field returns configured default value."""
-        with patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-                    return_value=[(2, 1, 6, "", ("93.184.216.34", 0))]):
+        with patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))]):
             c = _make_connector(field_default_values={"missing": "fallback"})
         result = c._get_typed_field_value("missing", {"other": 1})
         assert result == "fallback"
@@ -305,14 +304,13 @@ class TestFieldExtraction:
 # 5. Items array detection                                              #
 # ===================================================================== #
 
+
 class TestItemsArrayDetection:
     """Test _extract_items auto-detection of the items array."""
 
-    @patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-           return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
+    @patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
     def setup_method(self, method, _dns=None):
-        with patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-                    return_value=[(2, 1, 6, "", ("93.184.216.34", 0))]):
+        with patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))]):
             self.connector = _make_connector()
 
     def test_items_key(self):
@@ -358,6 +356,7 @@ class TestItemsArrayDetection:
 # 6. HTML stripping                                                     #
 # ===================================================================== #
 
+
 class TestHTMLStripping:
     """Test the _strip_html static method."""
 
@@ -392,14 +391,13 @@ class TestHTMLStripping:
 # 7. Document creation                                                  #
 # ===================================================================== #
 
+
 class TestDocumentCreation:
     """Test _item_to_document mapping."""
 
-    @patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-           return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
+    @patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))])
     def setup_method(self, method, _dns=None):
-        with patch("common.data_source.rest_api_connector.socket.getaddrinfo",
-                    return_value=[(2, 1, 6, "", ("93.184.216.34", 0))]):
+        with patch("common.data_source.rest_api_connector.socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 0))]):
             self.connector = _make_connector(
                 id_field="id",
                 content_fields=["title", "body"],
@@ -457,6 +455,7 @@ class TestDocumentCreation:
 # ===================================================================== #
 # 8. Pagination behaviour                                               #
 # ===================================================================== #
+
 
 class TestPaginationBehavior:
     """Test pagination iteration with mocked HTTP responses."""
@@ -518,9 +517,7 @@ class TestPaginationBehavior:
     def test_max_pages_cap(self):
         """Pagination respects the max_pages safety cap."""
         with _mocked_rest_api_requests_and_dns() as mock_rl:
-            mock_rl.get.return_value = _mock_response(
-                {"items": [{"title": "A"}, {"title": "B"}]}
-            )
+            mock_rl.get.return_value = _mock_response({"items": [{"title": "A"}, {"title": "B"}]})
 
             c = _make_paged_connector(
                 max_pages=3,
@@ -548,6 +545,7 @@ class TestPaginationBehavior:
 # ===================================================================== #
 # 9. Non-retriable HTTP errors                                          #
 # ===================================================================== #
+
 
 class TestNonRetriableErrors:
     """Test that HTTP errors are classified correctly in _fetch_page."""

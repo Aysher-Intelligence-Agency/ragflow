@@ -38,6 +38,7 @@ except Exception:
     class RAGFlowPdfParser:
         pass
 
+
 from deepdoc.parser.utils import extract_pdf_outlines
 
 

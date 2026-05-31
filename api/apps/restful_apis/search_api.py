@@ -106,9 +106,7 @@ def list_searches():
         else:
             effective_owner_ids = list(authorized_owner_ids)
 
-        search_apps, total = SearchService.get_by_tenant_ids(
-            effective_owner_ids, current_user.id, page_number, items_per_page, orderby, desc, keywords
-        )
+        search_apps, total = SearchService.get_by_tenant_ids(effective_owner_ids, current_user.id, page_number, items_per_page, orderby, desc, keywords)
         return get_json_result(data={"search_apps": search_apps, "total": total})
     except Exception as e:
         return server_error_response(e)
@@ -167,9 +165,7 @@ async def update(search_id):
             return get_data_error_result(message="search_config must be a JSON object")
         req["search_config"] = {**current_config, **new_config}
         logging.debug(
-            "Search update weight: search_id=%s user_id=%s "
-            "incoming_vector_similarity_weight=%s stored_vector_similarity_weight=%s "
-            "stored_full_text_weight=%s",
+            "Search update weight: search_id=%s user_id=%s incoming_vector_similarity_weight=%s stored_vector_similarity_weight=%s stored_full_text_weight=%s",
             search_id,
             current_user.id,
             new_config.get("vector_similarity_weight"),
@@ -228,8 +224,7 @@ async def completion(search_id):
 
     search_config = search_app.get("search_config", {})
     logging.debug(
-        "Search completion loaded weight: search_id=%s user_id=%s "
-        "stored_vector_similarity_weight=%s stored_full_text_weight=%s",
+        "Search completion loaded weight: search_id=%s user_id=%s stored_vector_similarity_weight=%s stored_full_text_weight=%s",
         search_id,
         uid,
         search_config.get("vector_similarity_weight", 0.3),
@@ -245,10 +240,14 @@ async def completion(search_id):
             async for ans in async_ask(req["question"], kb_ids, uid, search_config=search_config, search_id=search_id):
                 yield "data:" + json.dumps({"code": 0, "message": "", "data": ans}, ensure_ascii=False) + "\n\n"
         except Exception as ex:
-            yield "data:" + json.dumps(
-                {"code": 500, "message": str(ex), "data": {"answer": "**ERROR**: " + str(ex), "reference": []}},
-                ensure_ascii=False,
-            ) + "\n\n"
+            yield (
+                "data:"
+                + json.dumps(
+                    {"code": 500, "message": str(ex), "data": {"answer": "**ERROR**: " + str(ex), "reference": []}},
+                    ensure_ascii=False,
+                )
+                + "\n\n"
+            )
         yield "data:" + json.dumps({"code": 0, "message": "", "data": True}, ensure_ascii=False) + "\n\n"
 
     resp = Response(stream(), mimetype="text/event-stream")

@@ -339,6 +339,7 @@ def test_parent_and_ancestors_use_new_routes(monkeypatch):
     assert ancestors_res["code"] == 0
     assert ancestors_res["data"]["parent_folders"][0]["id"] == "root"
 
+
 #
 #  Copyright 2026 The InfiniFlow Authors. All Rights Reserved.
 #

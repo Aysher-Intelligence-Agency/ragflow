@@ -74,8 +74,7 @@ async def extract_keywords(docs: List[Dict], ctx: TaskContext) -> None:
 
         tasks = []
         for doc in docs:
-            tasks.append(
-                asyncio.create_task(doc_keyword_extraction(chat_model, doc, ctx.parser_config["auto_keywords"])))
+            tasks.append(asyncio.create_task(doc_keyword_extraction(chat_model, doc, ctx.parser_config["auto_keywords"])))
         try:
             await asyncio.gather(*tasks, return_exceptions=False)
         except Exception as e:
@@ -116,8 +115,7 @@ async def generate_questions(docs: List[Dict], ctx: TaskContext) -> None:
 
         tasks = []
         for doc in docs:
-            tasks.append(
-                asyncio.create_task(doc_question_proposal(chat_model, doc, ctx.parser_config["auto_questions"])))
+            tasks.append(asyncio.create_task(doc_question_proposal(chat_model, doc, ctx.parser_config["auto_questions"])))
         try:
             await asyncio.gather(*tasks, return_exceptions=False)
         except Exception as e:
@@ -184,18 +182,14 @@ async def generate_metadata(docs: List[Dict], ctx: TaskContext) -> None:
         metadata_conf = build_metadata_config(ctx.parser_config)
 
         async def gen_metadata_task(chat_mdl, d):
-            cached = get_llm_cache(chat_mdl.llm_name, d["content_with_weight"], "metadata",
-                                   metadata_conf)
+            cached = get_llm_cache(chat_mdl.llm_name, d["content_with_weight"], "metadata", metadata_conf)
             if not cached:
                 if ctx.has_canceled_func(ctx.id):
                     ctx.progress_cb(-1, msg="Task has been canceled.")
                     return
                 async with chat_limiter:
-                    cached = await gen_metadata(chat_mdl,
-                                                turn2jsonschema(metadata_conf),
-                                                d["content_with_weight"])
-                set_llm_cache(chat_mdl.llm_name, d["content_with_weight"], cached, "metadata",
-                              metadata_conf)
+                    cached = await gen_metadata(chat_mdl, turn2jsonschema(metadata_conf), d["content_with_weight"])
+                set_llm_cache(chat_mdl.llm_name, d["content_with_weight"], cached, "metadata", metadata_conf)
             if cached:
                 d["metadata_obj"] = cached
 
@@ -246,14 +240,12 @@ async def apply_tags(docs: List[Dict], ctx: TaskContext) -> None:
     all_tags = settings.retriever.all_tags_in_portion(tenant_id, kb_ids, S)
     chat_model_config = get_model_config_from_provider_instance(tenant_id, LLMType.CHAT, ctx.llm_id)
     with LLMBundle(ctx.tenant_id, chat_model_config, lang=ctx.language) as chat_model:
-
         docs_to_tag = []
         for doc in docs:
             if ctx.has_canceled_func(ctx.id):
                 ctx.progress_cb(-1, msg="Task has been canceled.")
                 return
-            if settings.retriever.tag_content(tenant_id, kb_ids, doc, all_tags, topn_tags=topn_tags, S=S) and len(
-                    doc.get(TAG_FLD, [])) > 0:
+            if settings.retriever.tag_content(tenant_id, kb_ids, doc, all_tags, topn_tags=topn_tags, S=S) and len(doc.get(TAG_FLD, [])) > 0:
                 examples.append({"content": doc["content_with_weight"], TAG_FLD: doc[TAG_FLD]})
             else:
                 docs_to_tag.append(doc)
@@ -266,7 +258,7 @@ async def apply_tags(docs: List[Dict], ctx: TaskContext) -> None:
                     return
                 picked_examples = random.choices(examples, k=2) if len(examples) > 2 else examples
                 if not picked_examples:
-                    picked_examples.append({"content": "This is an example", TAG_FLD: {'example': 1}})
+                    picked_examples.append({"content": "This is an example", TAG_FLD: {"example": 1}})
                 async with chat_limiter:
                     cached = await content_tagging(
                         chat_mdl,

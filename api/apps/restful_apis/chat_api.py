@@ -25,9 +25,7 @@ from types import SimpleNamespace
 from quart import Response, request
 
 from api.apps import current_user, login_required
-from api.db.joint_services.tenant_model_service import (
-    get_tenant_default_model_by_type, get_model_config_from_provider_instance, get_api_key, split_model_name
-)
+from api.db.joint_services.tenant_model_service import get_tenant_default_model_by_type, get_model_config_from_provider_instance, get_api_key, split_model_name
 from api.db.services.chunk_feedback_service import ChunkFeedbackService
 from api.db.services.conversation_service import ConversationService, structure_answer
 from api.db.services.dialog_service import DialogService, async_chat, gen_mindmap
@@ -52,8 +50,8 @@ from rag.prompts.template import load_prompt
 
 _DEFAULT_PROMPT_CONFIG = {
     "system": (
-        'You are an intelligent assistant. Please summarize the content of the dataset to answer the question. '
-        'Please list the data in the dataset and answer in detail. When all dataset content is irrelevant to the '
+        "You are an intelligent assistant. Please summarize the content of the dataset to answer the question. "
+        "Please list the data in the dataset and answer in detail. When all dataset content is irrelevant to the "
         'question, your answer must include the sentence "The answer you are looking for is not found in the dataset!" '
         "Answers need to consider chat history.\n"
         "      Here is the knowledge base:\n"
@@ -128,10 +126,7 @@ def _build_session_response(conv: dict) -> dict:
 
 
 async def _ensure_owned_chat(chat_id):
-    return await thread_pool_exec(
-        DialogService.query,
-        tenant_id=current_user.id, id=chat_id, status=StatusEnum.VALID.value
-    )
+    return await thread_pool_exec(DialogService.query, tenant_id=current_user.id, id=chat_id, status=StatusEnum.VALID.value)
 
 
 def _build_default_completion_dialog():
@@ -258,10 +253,11 @@ async def _validate_llm_id(llm_id, tenant_id, llm_setting=None):
 
     return None
 
+
 async def _validate_rerank_id(rerank_id, tenant_id):
     if not rerank_id:
         return None
-    parts = rerank_id.split('@')
+    parts = rerank_id.split("@")
     llm_name = parts[0]
     if llm_name in _DEFAULT_RERANK_MODELS:
         return None
@@ -308,7 +304,7 @@ async def _validate_dataset_ids(dataset_ids, tenant_id):
 
     embd_ids = [split_model_name(kb.embd_id)[0] for kb in kbs]
     if len(set(embd_ids)) > 1:
-        return f'Datasets use different embedding models: {[kb.embd_id for kb in kbs]}'
+        return f"Datasets use different embedding models: {[kb.embd_id for kb in kbs]}"
 
     return normalized_ids
 
@@ -449,12 +445,17 @@ async def list_chats():
 
         chats, total = await thread_pool_exec(
             DialogService.get_by_tenant_ids,
-            effective_owner_ids, current_user.id, page_number, items_per_page, orderby, desc, keywords, **exact_filters,
+            effective_owner_ids,
+            current_user.id,
+            page_number,
+            items_per_page,
+            orderby,
+            desc,
+            keywords,
+            **exact_filters,
         )
 
-        return get_json_result(
-            data={"chats": [_build_chat_response(chat) for chat in chats], "total": total}
-        )
+        return get_json_result(data={"chats": [_build_chat_response(chat) for chat in chats], "total": total})
     except Exception as ex:
         return server_error_response(ex)
 
@@ -467,7 +468,9 @@ async def get_chat(chat_id):
         for tenant in tenants:
             if await thread_pool_exec(
                 DialogService.query,
-                tenant_id=tenant.tenant_id, id=chat_id, status=StatusEnum.VALID.value,
+                tenant_id=tenant.tenant_id,
+                id=chat_id,
+                status=StatusEnum.VALID.value,
             ):
                 break
         else:
@@ -489,9 +492,7 @@ async def get_chat(chat_id):
 @login_required
 async def update_chat(chat_id):
     if not await _ensure_owned_chat(chat_id):
-        return get_json_result(
-            data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR
-        )
+        return get_json_result(data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR)
 
     try:
         req = await get_request_json()
@@ -573,9 +574,7 @@ async def update_chat(chat_id):
 @login_required
 async def patch_chat(chat_id):
     if not await _ensure_owned_chat(chat_id):
-        return get_json_result(
-            data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR
-        )
+        return get_json_result(data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR)
 
     try:
         req = await get_request_json()
@@ -663,9 +662,7 @@ async def patch_chat(chat_id):
 @login_required
 async def delete_chat(chat_id):
     if not await _ensure_owned_chat(chat_id):
-        return get_json_result(
-            data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR
-        )
+        return get_json_result(data=False, message="No authorization.", code=RetCode.AUTHENTICATION_ERROR)
 
     try:
         if not DialogService.update_by_id(chat_id, {"status": StatusEnum.INVALID.value}):
@@ -685,12 +682,7 @@ async def bulk_delete_chats():
     ids = req.get("ids")
     if not ids:
         if req.get("delete_all") is True:
-            ids = [
-                chat.id
-                for chat in DialogService.query(
-                    tenant_id=current_user.id, status=StatusEnum.VALID.value
-                )
-            ]
+            ids = [chat.id for chat in DialogService.query(tenant_id=current_user.id, status=StatusEnum.VALID.value)]
             if not ids:
                 return get_json_result(data={})
         else:
@@ -776,9 +768,7 @@ async def list_sessions(chat_id):
         session_id = request.args.get("id")
         name = request.args.get("name")
         user_id = request.args.get("user_id")
-        convs = ConversationService.get_list(
-            chat_id, page_number, items_per_page, orderby, desc, session_id, name, user_id
-        )
+        convs = ConversationService.get_list(chat_id, page_number, items_per_page, orderby, desc, session_id, name, user_id)
         if items_per_page == 0:
             convs = []
         return get_json_result(data=[_build_session_response(c) for c in convs])
@@ -1021,17 +1011,21 @@ async def transcription():
     uploaded = files["file"]
 
     ALLOWED_EXTS = {
-        ".wav", ".mp3", ".m4a", ".aac",
-        ".flac", ".ogg", ".webm",
-        ".opus", ".wma",
+        ".wav",
+        ".mp3",
+        ".m4a",
+        ".aac",
+        ".flac",
+        ".ogg",
+        ".webm",
+        ".opus",
+        ".wma",
     }
 
     filename = uploaded.filename or ""
     suffix = os.path.splitext(filename)[-1].lower()
     if suffix not in ALLOWED_EXTS:
-        return get_data_error_result(
-            message=f"Unsupported audio format: {suffix}. Allowed: {', '.join(sorted(ALLOWED_EXTS))}"
-        )
+        return get_data_error_result(message=f"Unsupported audio format: {suffix}. Allowed: {', '.join(sorted(ALLOWED_EXTS))}")
 
     fd, temp_audio_path = tempfile.mkstemp(suffix=suffix)
     os.close(fd)

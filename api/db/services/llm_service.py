@@ -173,7 +173,9 @@ class LLMBundle(LLM4Tenant):
 
     def similarity(self, query: str, texts: list):
         if self.langfuse:
-            generation = self.langfuse.start_observation(trace_context=self.trace_context, as_type="generation", name="similarity", model=self.model_config["llm_name"], input={"query": query, "texts": texts})
+            generation = self.langfuse.start_observation(
+                trace_context=self.trace_context, as_type="generation", name="similarity", model=self.model_config["llm_name"], input={"query": query, "texts": texts}
+            )
 
         sim, used_tokens = self.mdl.similarity(query, texts)
         logging.info("LLMBundle.similarity used_tokens: {}, llm_name: {}".format(used_tokens, self.model_config["llm_name"]))
@@ -199,7 +201,9 @@ class LLMBundle(LLM4Tenant):
 
     def describe_with_prompt(self, image, prompt):
         if self.langfuse:
-            generation = self.langfuse.start_observation(trace_context=self.trace_context, as_type="generation", name="describe_with_prompt", metadata={"model": self.model_config["llm_name"], "prompt": prompt})
+            generation = self.langfuse.start_observation(
+                trace_context=self.trace_context, as_type="generation", name="describe_with_prompt", metadata={"model": self.model_config["llm_name"], "prompt": prompt}
+            )
 
         txt, used_tokens = self.mdl.describe_with_prompt(image, prompt)
         logging.info("LLMBundle.describe_with_prompt used_tokens: {}, llm_name: {}".format(used_tokens, self.model_config["llm_name"]))
@@ -228,7 +232,8 @@ class LLMBundle(LLM4Tenant):
         supports_stream = hasattr(mdl, "stream_transcription") and callable(getattr(mdl, "stream_transcription"))
         if supports_stream:
             if self.langfuse:
-                generation = self.langfuse.start_observation(as_type="generation",
+                generation = self.langfuse.start_observation(
+                    as_type="generation",
                     trace_context=self.trace_context,
                     name="stream_transcription",
                     metadata={"model": self.model_config["llm_name"]},
@@ -262,7 +267,8 @@ class LLMBundle(LLM4Tenant):
             return
 
         if self.langfuse:
-            generation = self.langfuse.start_observation(as_type="generation",
+            generation = self.langfuse.start_observation(
+                as_type="generation",
                 trace_context=self.trace_context,
                 name="stream_transcription",
                 metadata={"model": self.model_config["llm_name"]},
@@ -408,7 +414,9 @@ class LLMBundle(LLM4Tenant):
 
         generation = None
         if self.langfuse:
-            generation = self.langfuse.start_observation(trace_context=self.trace_context, as_type="generation", name="chat", model=self.model_config["llm_name"], input={"system": system, "history": history})
+            generation = self.langfuse.start_observation(
+                trace_context=self.trace_context, as_type="generation", name="chat", model=self.model_config["llm_name"], input={"system": system, "history": history}
+            )
 
         chat_partial = partial(base_fn, system, history, gen_conf)
         use_kwargs = self._clean_param(chat_partial, **kwargs)
@@ -449,7 +457,9 @@ class LLMBundle(LLM4Tenant):
 
         generation = None
         if self.langfuse:
-            generation = self.langfuse.start_observation(trace_context=self.trace_context, as_type="generation", name="chat_streamly", model=self.model_config["llm_name"], input={"system": system, "history": history})
+            generation = self.langfuse.start_observation(
+                trace_context=self.trace_context, as_type="generation", name="chat_streamly", model=self.model_config["llm_name"], input={"system": system, "history": history}
+            )
 
         if stream_fn:
             chat_partial = partial(stream_fn, system, history, gen_conf)
@@ -492,7 +502,9 @@ class LLMBundle(LLM4Tenant):
 
         generation = None
         if self.langfuse:
-            generation = self.langfuse.start_observation(trace_context=self.trace_context, as_type="generation", name="chat_streamly", model=self.model_config["llm_name"], input={"system": system, "history": history})
+            generation = self.langfuse.start_observation(
+                trace_context=self.trace_context, as_type="generation", name="chat_streamly", model=self.model_config["llm_name"], input={"system": system, "history": history}
+            )
 
         if stream_fn:
             chat_partial = partial(stream_fn, system, history, gen_conf)

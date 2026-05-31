@@ -45,7 +45,7 @@ check_cpp_deps() {
 
 check_go_deps() {
     print_section "Checking go dependencies"
-    
+
     command -v go >/dev/null 2>&1 || { echo -e "${RED}Error: go is required but not installed.${NC}"; exit 1; }
 
     echo "✓ Required tools are available"
@@ -54,30 +54,30 @@ check_go_deps() {
 # Build C++ static library
 build_cpp() {
     print_section "Building C++ static library"
-    
+
     mkdir -p "$BUILD_DIR"
     cd "$BUILD_DIR"
-    
+
     echo "Running cmake..."
     cmake .. -DCMAKE_BUILD_TYPE=Release
-    
+
     echo "Building librag_tokenizer_c_api.a..."
     make rag_tokenizer_c_api -j$(nproc)
-    
+
     if [ ! -f "$BUILD_DIR/librag_tokenizer_c_api.a" ]; then
         echo -e "${RED}Error: Failed to build C++ static library${NC}"
         exit 1
     fi
-    
+
     echo -e "${GREEN}✓ C++ static library built successfully${NC}"
 }
 
 # Build Go server
 build_go() {
     print_section "Building RAGFlow go"
-    
+
     cd "$PROJECT_ROOT"
-    
+
     # Check if C++ library exists
     if [ ! -f "$BUILD_DIR/librag_tokenizer_c_api.a" ]; then
         echo -e "${RED}Error: C++ static library not found. Run with --cpp first.${NC}"
@@ -98,7 +98,7 @@ build_go() {
         echo -e "${YELLOW}Warning: libpcre2-8.a not found. You may need to install libpcre2-dev:${NC}"
         sudo apt -y install libpcre2-dev
     fi
-    
+
     echo "Building RAGFlow binary: $RAGFLOW_SERVER_BINARY, $ADMIN_SERVER_BINARY, and $RAGFLOW_CLI_BINARY"
     GOPROXY=${GOPROXY:-https://goproxy.cn,https://proxy.golang.org,direct} CGO_ENABLED=1 go build -o "$RAGFLOW_SERVER_BINARY" cmd/server_main.go
     GOPROXY=${GOPROXY:-https://goproxy.cn,https://proxy.golang.org,direct} CGO_ENABLED=1 go build -o "$ADMIN_SERVER_BINARY" cmd/admin_server.go
@@ -122,7 +122,7 @@ build_go() {
 # Clean build artifacts
 clean() {
     print_section "Cleaning build artifacts"
-    
+
     rm -rf "$BUILD_DIR"
     rm -f "$RAGFLOW_SERVER_BINARY"
     rm -f "$ADMIN_SERVER_BINARY"
@@ -145,7 +145,7 @@ run() {
         echo -e "${RED}Error: Binary not found. Build first with --all or --go${NC}"
         exit 1
     fi
-    
+
     print_section "Starting server"
     cd "$PROJECT_ROOT"
     ./server_main
