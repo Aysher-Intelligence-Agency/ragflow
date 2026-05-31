@@ -88,7 +88,7 @@ class EmbeddingService:
         # Batch encode contents using EmbeddingUtils
         vects_batches = []
         for i in range(0, len(contents), self._embedding_batch_size):
-            batch = contents[i: i + self._embedding_batch_size]
+            batch = contents[i : i + self._embedding_batch_size]
             vts, c = self._encode_batch(batch, embedding_model)
             vects_batches.append(vts)
             tk_count += c
@@ -121,7 +121,9 @@ class EmbeddingService:
 
     def _run_encode(self, texts: List[str], model) -> Tuple[np.ndarray, int]:
         """Run encoding with rate limiting."""
+
         async def _encode():
             async with self._task_context.embed_limiter:
                 return model.encode(texts)
+
         return asyncio.get_event_loop().run_until_complete(_encode())

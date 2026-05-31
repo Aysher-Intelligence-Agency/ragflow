@@ -47,7 +47,6 @@ class TestDocumentsList:
         assert len(res["data"]["docs"]) == 5
         assert res["data"]["total"] == 5
 
-
     @pytest.mark.p1
     @pytest.mark.parametrize(
         "params, expected_code, expected_page_size, expected_message",

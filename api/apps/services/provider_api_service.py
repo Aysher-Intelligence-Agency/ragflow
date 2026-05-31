@@ -42,18 +42,8 @@ def list_providers(tenant_id: str, all_available: bool = False):
     if all_available:
         providers = []
         for factory_info in FACTORY_LLM_INFOS:
-            model_types = sorted(set(
-                llm["model_type"]
-                for llm in factory_info.get("llm", [])
-                if llm.get("model_type")
-            ))
-            providers.append({
-                "model_types": model_types,
-                "name": factory_info["name"],
-                "url": {
-                    "default": factory_info.get("url", "")
-                }
-            })
+            model_types = sorted(set(llm["model_type"] for llm in factory_info.get("llm", []) if llm.get("model_type")))
+            providers.append({"model_types": model_types, "name": factory_info["name"], "url": {"default": factory_info.get("url", "")}})
         return True, providers
 
     # List tenant-configured providers
@@ -64,18 +54,8 @@ def list_providers(tenant_id: str, all_available: bool = False):
     for name in factory_names:
         if factory_info_mapping.get(name):
             factory_info = factory_info_mapping[name]
-            model_types = sorted(set(
-                llm["model_type"]
-                for llm in factory_info.get("llm", [])
-                if llm.get("model_type")
-            ))
-            providers.append({
-                "model_types": model_types,
-                "name": factory_info["name"],
-                "url": {
-                    "default": factory_info.get("url", "")
-                }
-            })
+            model_types = sorted(set(llm["model_type"] for llm in factory_info.get("llm", []) if llm.get("model_type")))
+            providers.append({"model_types": model_types, "name": factory_info["name"], "url": {"default": factory_info.get("url", "")}})
 
     return True, providers
 
@@ -99,10 +79,7 @@ def add_provider(tenant_id: str, provider_name: str):
     if existing:
         return False, f"Provider {provider_name} already exists"
 
-    TenantModelProviderService.insert(
-        tenant_id=tenant_id,
-        provider_name=provider_name
-    )
+    TenantModelProviderService.insert(tenant_id=tenant_id, provider_name=provider_name)
     return True, "success"
 
 
@@ -134,17 +111,11 @@ def show_provider(provider_name: str):
     :param provider_name: provider/factory name
     :return: (success, result_or_error_message)
     """
-    fac_list = [f for f in FACTORY_LLM_INFOS if f["name"]==provider_name]
+    fac_list = [f for f in FACTORY_LLM_INFOS if f["name"] == provider_name]
     if not fac_list:
         return False, f"Provider '{provider_name}' not found"
     factory_info = fac_list[0]
-    return True, {
-        "base_url": {
-            "default": factory_info.get("url", "")
-        },
-        "name": factory_info["name"],
-        "total_models": len(factory_info.get("llm", []))
-    }
+    return True, {"base_url": {"default": factory_info.get("url", "")}, "name": factory_info["name"], "total_models": len(factory_info.get("llm", []))}
 
 
 def list_provider_models(provider_name: str):
@@ -154,7 +125,7 @@ def list_provider_models(provider_name: str):
     :param provider_name: provider/factory name
     :return: (success, result_or_error_message)
     """
-    factory_info = [f for f in FACTORY_LLM_INFOS if f["name"]==provider_name]
+    factory_info = [f for f in FACTORY_LLM_INFOS if f["name"] == provider_name]
     if not factory_info:
         return False, f"Provider '{provider_name}' not found"
     llms = factory_info[0]["llm"]
@@ -163,12 +134,7 @@ def list_provider_models(provider_name: str):
 
     models = []
     for llm in llms:
-        models.append({
-            "name": llm["name"],
-            "max_tokens": llm["max_tokens"],
-            "model_types": [llm["model_type"]],
-            "features": None
-        })
+        models.append({"name": llm["name"], "max_tokens": llm["max_tokens"], "model_types": [llm["model_type"]], "features": None})
     return True, models
 
 
@@ -191,15 +157,7 @@ def show_provider_model(provider_name: str, model_name: str):
         return False, f"Model '{model_name}' not found"
     llm_info = target_llm[0]
 
-    return True, {
-        "name": llm_info["name"],
-        "max_tokens": llm_info["max_tokens"],
-        "model_types": [llm_info["model_type"]],
-        "thinking": None,
-        "model_type_map": {
-            llm_info["model_type"]: True
-        }
-    }
+    return True, {"name": llm_info["name"], "max_tokens": llm_info["max_tokens"], "model_types": [llm_info["model_type"]], "thinking": None, "model_type_map": {llm_info["model_type"]: True}}
 
 
 def create_provider_instance(tenant_id: str, provider_name: str, instance_name: str, api_key: str, base_url: str, region: str):
@@ -238,12 +196,13 @@ def create_provider_instance(tenant_id: str, provider_name: str, instance_name: 
             return False, f"Already exist instance: {same_key_instance.instance_name} with api_key {api_key}"
 
     import json
+
     extra_fields = {}
     if base_url:
         extra_fields["base_url"] = base_url
     if region:
         extra_fields["region"] = region
-    TenantModelInstanceService.create_instance(provider_id=provider_obj.id,instance_name=instance_name,api_key=api_key, extra=json.dumps(extra_fields))
+    TenantModelInstanceService.create_instance(provider_id=provider_obj.id, instance_name=instance_name, api_key=api_key, extra=json.dumps(extra_fields))
 
     return True, "success"
 
@@ -257,6 +216,7 @@ def list_provider_instances(tenant_id: str, provider_name: str):
     :return: (success, result_or_error_message)
     """
     import json
+
     provider_obj = TenantModelProviderService.get_by_tenant_id_and_provider_name(tenant_id, provider_name)
     if not provider_obj:
         return False, f"No provider found for provider '{provider_name}'"
@@ -267,14 +227,16 @@ def list_provider_instances(tenant_id: str, provider_name: str):
     instances = []
     for instance_obj in instance_objs:
         extra_fields = json.loads(instance_obj.extra) if instance_obj.extra else {}
-        instances.append({
-            "api_key": instance_obj.api_key,
-            "id": instance_obj.id,
-            "instance_name": instance_obj.instance_name,
-            "provider_id": provider_id,
-            "region": extra_fields.get("region", ""),
-            "status": instance_obj.status,
-        })
+        instances.append(
+            {
+                "api_key": instance_obj.api_key,
+                "id": instance_obj.id,
+                "instance_name": instance_obj.instance_name,
+                "provider_id": provider_id,
+                "region": extra_fields.get("region", ""),
+                "status": instance_obj.status,
+            }
+        )
 
     return True, instances
 
@@ -297,14 +259,9 @@ def show_provider_instance(tenant_id: str, provider_name: str, instance_name: st
         return False, f"No instance found for provider '{provider_name}' and instance '{instance_name}'"
 
     import json
+
     extra_fields = json.loads(instance_obj.extra) if instance_obj.extra else {}
-    return True, {
-        "id": instance_obj.id,
-        "instance_name": instance_obj.instance_name,
-        "provider_id": provider_id,
-        "region": extra_fields.get("region", ""),
-        "status": instance_obj.status
-    }
+    return True, {"id": instance_obj.id, "instance_name": instance_obj.instance_name, "provider_id": provider_id, "region": extra_fields.get("region", ""), "status": instance_obj.status}
 
 
 def drop_provider_instances(tenant_id: str, provider_name: str, instance_names: list):
@@ -377,11 +334,7 @@ def list_instance_models(tenant_id: str, provider_name: str, instance_name: str,
         if model_info_map.get(model_record.model_name):
             model_info_map[model_record.model_name]["model_type"].append(model_record.model_type)
         else:
-            model_info_map[model_record.model_name] = {
-                "status": model_record.status,
-                "model_type": [model_record.model_type],
-                "extra": model_record.extra
-            }
+            model_info_map[model_record.model_name] = {"status": model_record.status, "model_type": [model_record.model_type], "extra": model_record.extra}
 
     # List all models from the LLM dictionary for this provider
     factory_info = [f for f in FACTORY_LLM_INFOS if f["name"] == provider_name]
@@ -391,27 +344,31 @@ def list_instance_models(tenant_id: str, provider_name: str, instance_name: str,
     llms = factory_info[0].get("llm", [])
     models = []
     for llm in llms:
-        models.append({
-            "name": llm["llm_name"],
-            "model_type": [llm["model_type"]] + model_info_map.get(llm["llm_name"], {}).get("model_type", []),
-            "max_tokens": llm.get("max_tokens"),
-            "status": model_info_map.get(llm["llm_name"], {}).get("status", "active"),
-        })
+        models.append(
+            {
+                "name": llm["llm_name"],
+                "model_type": [llm["model_type"]] + model_info_map.get(llm["llm_name"], {}).get("model_type", []),
+                "max_tokens": llm.get("max_tokens"),
+                "status": model_info_map.get(llm["llm_name"], {}).get("status", "active"),
+            }
+        )
     factory_models = [m["name"] for m in models]
     for model_name, model_info_dict in model_info_map.items():
         if model_name not in factory_models:
             extra_fields = json.loads(model_info_dict["extra"]) if model_info_dict["extra"] else {}
-            models.append({
-                "name": model_name,
-                "model_type": model_info_dict["model_type"],
-                "max_tokens": extra_fields.get("max_tokens", 8192),
-                "status": model_info_dict["status"],
-            })
+            models.append(
+                {
+                    "name": model_name,
+                    "model_type": model_info_dict["model_type"],
+                    "max_tokens": extra_fields.get("max_tokens", 8192),
+                    "status": model_info_dict["status"],
+                }
+            )
 
     return True, models
 
 
-def add_model_to_instance(tenant_id: str, provider_name: str, instance_name: str, model_name: str, model_type: str|list[str], max_tokens: int, extra: dict):
+def add_model_to_instance(tenant_id: str, provider_name: str, instance_name: str, model_name: str, model_type: str | list[str], max_tokens: int, extra: dict):
     provider_obj = TenantModelProviderService.get_by_tenant_id_and_provider_name(tenant_id, provider_name)
     if not provider_obj:
         return False, f"No provider found for provider '{provider_name}'"
@@ -436,13 +393,7 @@ def add_model_to_instance(tenant_id: str, provider_name: str, instance_name: str
         if target_model:
             extra_fields.update({"is_tool": target_model[0].get("is_tool", False)})
         extra_fields.update(extra)
-        TenantModelService.insert(
-            model_name=model_name,
-            provider_id=provider_obj.id,
-            instance_id=instance_obj.id,
-            model_type=_type,
-            extra=json.dumps(extra_fields)
-        )
+        TenantModelService.insert(model_name=model_name, provider_id=provider_obj.id, instance_id=instance_obj.id, model_type=_type, extra=json.dumps(extra_fields))
 
     return True, "success"
 
@@ -477,9 +428,7 @@ def update_model_status(tenant_id: str, provider_name: str, instance_name: str, 
         return False, f"No instance found for provider '{provider_name}' and instance '{instance_name}'"
 
     # Check if model record already exists in tenant_model table
-    model_obj_list = TenantModelService.get_by_provider_id_and_instance_id_and_model_name(
-        provider_obj.id, instance_obj.id, model_name
-    )
+    model_obj_list = TenantModelService.get_by_provider_id_and_instance_id_and_model_name(provider_obj.id, instance_obj.id, model_name)
 
     if model_obj_list:
         # Model record exists — update its status

@@ -449,8 +449,8 @@ def delete_knowledge_graph(dataset_id: str, tenant_id: str):
     _, kb = KnowledgebaseService.get_by_id(dataset_id)
     from rag.nlp import search
     from rag.graphrag.phase_markers import clear_phase_markers
-    settings.docStoreConn.delete({"knowledge_graph_kwd": ["graph", "subgraph", "entity", "relation", "community_report"]},
-                                 search.index_name(kb.tenant_id), dataset_id)
+
+    settings.docStoreConn.delete({"knowledge_graph_kwd": ["graph", "subgraph", "entity", "relation", "community_report"]}, search.index_name(kb.tenant_id), dataset_id)
     # Wiping the graph invalidates any phase-completion markers used to
     # short-circuit resolution / community detection on resume.
     clear_phase_markers(dataset_id)
@@ -823,8 +823,8 @@ def delete_index(dataset_id: str, tenant_id: str, index_type: str, wipe: bool = 
     if wipe and index_type == "graph":
         from rag.nlp import search
         from rag.graphrag.phase_markers import clear_phase_markers
-        settings.docStoreConn.delete({"knowledge_graph_kwd": ["graph", "subgraph", "entity", "relation", "community_report"]},
-                                     search.index_name(kb.tenant_id), dataset_id)
+
+        settings.docStoreConn.delete({"knowledge_graph_kwd": ["graph", "subgraph", "entity", "relation", "community_report"]}, search.index_name(kb.tenant_id), dataset_id)
         # Wiping the graph invalidates any phase-completion markers used to
         # short-circuit resolution / community detection on resume.
         clear_phase_markers(dataset_id)
@@ -971,8 +971,7 @@ async def search(dataset_id: str, tenant_id: str, req: dict):
         use_kg = search_config.get("use_kg", use_kg)
         langs = search_config.get("cross_languages", langs)
         logging.debug(
-            "Dataset search loaded Search config: search_id=%s dataset_id=%s "
-            "vector_similarity_weight=%s full_text_weight=%s similarity_threshold=%s top_k=%s",
+            "Dataset search loaded Search config: search_id=%s dataset_id=%s vector_similarity_weight=%s full_text_weight=%s similarity_threshold=%s top_k=%s",
             search_id,
             dataset_id,
             vector_similarity_weight,
@@ -1127,11 +1126,15 @@ def check_embedding(dataset_id: str, tenant_id: str, req: dict):
         index_nm = search.index_name(tenant_id)
 
         res0 = docStoreConn.search(
-            select_fields=[], highlight_fields=[],
+            select_fields=[],
+            highlight_fields=[],
             condition={"kb_id": kb_id, "available_int": 1},
-            match_expressions=[], order_by=OrderByExpr(),
-            offset=0, limit=1,
-            index_names=index_nm, knowledgebase_ids=[kb_id],
+            match_expressions=[],
+            order_by=OrderByExpr(),
+            offset=0,
+            limit=1,
+            index_names=index_nm,
+            knowledgebase_ids=[kb_id],
         )
         total = docStoreConn.get_total(res0)
         if total <= 0:
@@ -1146,9 +1149,12 @@ def check_embedding(dataset_id: str, tenant_id: str, req: dict):
                 select_fields=list(base_fields),
                 highlight_fields=[],
                 condition={"kb_id": kb_id, "available_int": 1},
-                match_expressions=[], order_by=OrderByExpr(),
-                offset=off, limit=1,
-                index_names=index_nm, knowledgebase_ids=[kb_id],
+                match_expressions=[],
+                order_by=OrderByExpr(),
+                offset=off,
+                limit=1,
+                index_names=index_nm,
+                knowledgebase_ids=[kb_id],
             )
             ids = docStoreConn.get_doc_ids(res1)
             if not ids:
@@ -1159,20 +1165,22 @@ def check_embedding(dataset_id: str, tenant_id: str, req: dict):
             vec_field = _guess_vec_field(full_doc)
             vec = _as_float_vec(full_doc.get(vec_field))
 
-            out.append({
-                "chunk_id": cid,
-                "kb_id": kb_id,
-                "doc_id": full_doc.get("doc_id"),
-                "doc_name": full_doc.get("docnm_kwd"),
-                "vector_field": vec_field,
-                "vector_dim": len(vec),
-                "vector": vec,
-                "page_num_int": full_doc.get("page_num_int"),
-                "position_int": full_doc.get("position_int"),
-                "top_int": full_doc.get("top_int"),
-                "content_with_weight": full_doc.get("content_with_weight") or "",
-                "question_kwd": full_doc.get("question_kwd") or [],
-            })
+            out.append(
+                {
+                    "chunk_id": cid,
+                    "kb_id": kb_id,
+                    "doc_id": full_doc.get("doc_id"),
+                    "doc_name": full_doc.get("docnm_kwd"),
+                    "vector_field": vec_field,
+                    "vector_dim": len(vec),
+                    "vector": vec,
+                    "page_num_int": full_doc.get("page_num_int"),
+                    "position_int": full_doc.get("position_int"),
+                    "top_int": full_doc.get("top_int"),
+                    "content_with_weight": full_doc.get("content_with_weight") or "",
+                    "question_kwd": full_doc.get("question_kwd") or [],
+                }
+            )
         return out
 
     def _clean(s: str):
@@ -1222,9 +1230,7 @@ def check_embedding(dataset_id: str, tenant_id: str, req: dict):
 
         try:
             v, _ = emb_mdl.encode([title, txt_in])
-            assert len(v[1]) == len(ck["vector"]), (
-                f"The dimension ({len(v[1])}) of given embedding model is different from the original ({len(ck['vector'])})"
-            )
+            assert len(v[1]) == len(ck["vector"]), f"The dimension ({len(v[1])}) of given embedding model is different from the original ({len(ck['vector'])})"
             sim_content = _cos_sim(v[1], ck["vector"])
             title_w = 0.1
             qv_mix = title_w * v[0] + (1 - title_w) * v[1]
@@ -1238,14 +1244,16 @@ def check_embedding(dataset_id: str, tenant_id: str, req: dict):
             return False, f"Embedding failure. {e}"
 
         eff_sims.append(sim)
-        results.append({
-            "chunk_id": ck["chunk_id"],
-            "doc_id": ck["doc_id"],
-            "doc_name": ck["doc_name"],
-            "vector_field": ck["vector_field"],
-            "vector_dim": ck["vector_dim"],
-            "cos_sim": round(sim, 6),
-        })
+        results.append(
+            {
+                "chunk_id": ck["chunk_id"],
+                "doc_id": ck["doc_id"],
+                "doc_name": ck["doc_name"],
+                "vector_field": ck["vector_field"],
+                "vector_dim": ck["vector_dim"],
+                "cos_sim": round(sim, 6),
+            }
+        )
 
     summary = {
         "kb_id": dataset_id,
@@ -1266,7 +1274,11 @@ def check_embedding(dataset_id: str, tenant_id: str, req: dict):
         logging.info("check_embedding: dataset=%s compatible avg_cos_sim=%s valid=%d", dataset_id, summary["avg_cos_sim"], len(eff_sims))
         return True, data
     logging.warning("check_embedding: dataset=%s not_effective avg_cos_sim=%s valid=%d", dataset_id, summary["avg_cos_sim"], len(eff_sims))
-    return "not_effective", {"code": RetCode.NOT_EFFECTIVE, "message": "Embedding model switch failed: the average similarity between old and new vectors is below 0.9, indicating incompatible vector spaces.", "data": data}
+    return "not_effective", {
+        "code": RetCode.NOT_EFFECTIVE,
+        "message": "Embedding model switch failed: the average similarity between old and new vectors is below 0.9, indicating incompatible vector spaces.",
+        "data": data,
+    }
 
 
 async def search_datasets(tenant_id: str, req: dict):
@@ -1341,8 +1353,7 @@ async def search_datasets(tenant_id: str, req: dict):
         use_kg = search_config.get("use_kg", use_kg)
         langs = search_config.get("cross_languages", langs)
         logging.debug(
-            "Dataset search loaded Search config: search_id=%s dataset_ids=%s "
-            "vector_similarity_weight=%s full_text_weight=%s similarity_threshold=%s top_k=%s",
+            "Dataset search loaded Search config: search_id=%s dataset_ids=%s vector_similarity_weight=%s full_text_weight=%s similarity_threshold=%s top_k=%s",
             search_id,
             kb_ids,
             vector_similarity_weight,

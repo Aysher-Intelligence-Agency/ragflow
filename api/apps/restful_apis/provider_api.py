@@ -541,9 +541,7 @@ def list_instance_models(tenant_id: str = None, provider_name: str = None, insta
     """
     supported_only = request.args.get("supported", "").lower() == "true"
     try:
-        success, result = provider_api_service.list_instance_models(
-            tenant_id, provider_name, instance_name, supported_only
-        )
+        success, result = provider_api_service.list_instance_models(tenant_id, provider_name, instance_name, supported_only)
         if success:
             return get_result(data=result)
         else:
@@ -616,9 +614,7 @@ async def add_model_to_instance(tenant_id: str, provider_name: str, instance_nam
     extra = data.get("extra", {})
 
     try:
-        success, result = provider_api_service.add_model_to_instance(
-            tenant_id, provider_name, instance_name, model_name, model_type, max_tokens, extra
-        )
+        success, result = provider_api_service.add_model_to_instance(tenant_id, provider_name, instance_name, model_name, model_type, max_tokens, extra)
         if success:
             return get_result(message=result)
         else:
@@ -763,15 +759,14 @@ async def chat_to_model(tenant_id: str = None, provider_name: str = None, instan
     thinking = data.get("thinking", False)
 
     try:
-        success, result = await provider_api_service.chat_to_model(
-            tenant_id, provider_name, instance_name, model_name, message, stream, thinking
-        )
+        success, result = await provider_api_service.chat_to_model(tenant_id, provider_name, instance_name, model_name, message, stream, thinking)
         if not success:
             return get_error_data_result(message=result)
 
         if stream and isinstance(result, dict) and result.get("type") == "stream":
             # Streaming response using SSE
             from quart import Response
+
             llm = result["llm"]
 
             async def generate():
@@ -784,10 +779,14 @@ async def chat_to_model(tenant_id: str = None, provider_name: str = None, instan
                         yield f"data: [MESSAGE]{chunk}\n\n"
                 yield "data: [DONE]\n\n"
 
-            return Response(generate(), mimetype="text/event-stream", headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-            })
+            return Response(
+                generate(),
+                mimetype="text/event-stream",
+                headers={
+                    "Cache-Control": "no-cache",
+                    "Connection": "keep-alive",
+                },
+            )
 
         # Non-streaming response
         return get_result(data=result)

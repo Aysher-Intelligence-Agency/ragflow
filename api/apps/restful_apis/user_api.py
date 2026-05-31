@@ -116,7 +116,7 @@ async def login():
 
     user = UserService.query_user(email, password)
 
-    if user and hasattr(user, 'is_active') and user.is_active == "0":
+    if user and hasattr(user, "is_active") and user.is_active == "0":
         logging.warning("Login failed: disabled account for user_id=%s", user.id)
         return get_json_result(
             data=False,
@@ -261,7 +261,7 @@ async def oauth_callback(channel):
         # User exists, try to log in
         user = users[0]
         user.access_token = get_uuid()
-        if user and hasattr(user, 'is_active') and user.is_active == "0":
+        if user and hasattr(user, "is_active") and user.is_active == "0":
             return redirect("/?error=user_inactive")
 
         login_user(user)
@@ -647,7 +647,7 @@ async def forget_get_captcha():
     - Generate an image captcha and cache it in Redis under key captcha:{email} with TTL = OTP_TTL_SECONDS.
     - Returns the captcha as a PNG image.
     """
-    email = (request.args.get("email") or "")
+    email = request.args.get("email") or ""
     if not email:
         return get_json_result(data=False, code=RetCode.ARGUMENT_ERROR, message="email is required")
 
@@ -658,9 +658,10 @@ async def forget_get_captcha():
     # Generate captcha text
     allowed = string.ascii_uppercase + string.digits
     captcha_text = "".join(secrets.choice(allowed) for _ in range(OTP_LENGTH))
-    REDIS_CONN.set(captcha_key(email), captcha_text, 60) # Valid for 60 seconds
+    REDIS_CONN.set(captcha_key(email), captcha_text, 60)  # Valid for 60 seconds
 
     from captcha.image import ImageCaptcha
+
     image = ImageCaptcha(width=300, height=120, font_sizes=[50, 60, 70])
     img_bytes = image.generate(captcha_text).read()
     response = await make_response(img_bytes)
@@ -810,7 +811,7 @@ async def forget_reset_password():
     - auto login
     - clear verified flag
     """
-    
+
     req = await get_request_json()
     email = req.get("email") or ""
     new_pwd = req.get("new_password")
@@ -823,8 +824,8 @@ async def forget_reset_password():
         return get_json_result(data=False, code=RetCode.AUTHENTICATION_ERROR, message="email not verified")
 
     new_pwd_base64 = decrypt(new_pwd)
-    new_pwd_string = base64.b64decode(new_pwd_base64).decode('utf-8')
-    new_pwd2_string = base64.b64decode(decrypt(new_pwd2)).decode('utf-8')
+    new_pwd_string = base64.b64decode(new_pwd_base64).decode("utf-8")
+    new_pwd2_string = base64.b64decode(decrypt(new_pwd2)).decode("utf-8")
 
     if new_pwd_string != new_pwd2_string:
         return get_json_result(data=False, code=RetCode.ARGUMENT_ERROR, message="passwords do not match")
@@ -832,7 +833,7 @@ async def forget_reset_password():
     users = UserService.query_user_by_email(email=email)
     if not users:
         return get_json_result(data=False, code=RetCode.DATA_ERROR, message="invalid email")
-    
+
     user = users[0]
     try:
         UserService.update_user_password(user.id, new_pwd_base64)
@@ -848,5 +849,3 @@ async def forget_reset_password():
 
     msg = "Password reset successful. Logged in."
     return await construct_response(data=user.to_safe_dict(for_self=True), auth=user.get_id(), message=msg)
-
-

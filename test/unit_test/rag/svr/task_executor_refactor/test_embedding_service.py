@@ -61,7 +61,7 @@ class TestEmbeddingServiceEmbedChunks:
     method-boundary reshuffles.
     """
 
-    @patch.object(EmbeddingService, '_run_encode')
+    @patch.object(EmbeddingService, "_run_encode")
     def test_embed_chunks_basic(self, mock_run_encode):
         """Test basic chunk embedding."""
         mock_run_encode.return_value = (np.array([[1.0, 2.0]]), 10)
@@ -80,7 +80,7 @@ class TestEmbeddingServiceEmbedChunks:
         assert vector_size == 2
         assert "q_2_vec" in docs[0]
 
-    @patch.object(EmbeddingService, '_run_encode')
+    @patch.object(EmbeddingService, "_run_encode")
     def test_embed_chunks_uses_embedding_utils(self, mock_run_encode):
         """Test that embed_chunks uses EmbeddingUtils internally.
 
@@ -102,7 +102,7 @@ class TestEmbeddingServiceEmbedChunks:
 
         mock_run_encode.assert_called()
 
-    @patch.object(EmbeddingService, '_run_encode')
+    @patch.object(EmbeddingService, "_run_encode")
     def test_embed_chunks_with_title_content_combination(self, mock_run_encode):
         """Test that title and content vectors are combined."""
         mock_run_encode.return_value = (np.array([[1.0, 2.0]]), 10)
@@ -119,7 +119,7 @@ class TestEmbeddingServiceEmbedChunks:
 
         assert vector_size == 2
 
-    @patch.object(EmbeddingService, '_run_encode')
+    @patch.object(EmbeddingService, "_run_encode")
     def test_embed_chunks_handles_long_text(self, mock_run_encode):
         """Test that long texts are handled by embedding pipeline.
 

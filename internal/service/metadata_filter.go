@@ -168,7 +168,7 @@ func GenMetaFilter(ctx context.Context, chatModel *modelModule.ChatModel, metaDa
 	if err != nil {
 		common.Warn("ChatWithMessages failed for GenMetaFilter",
 			zap.String("model",
-                 
+
                  *chatModel.ModelName),
 			zap.Error(err))
 		return nil, fmt.Errorf("failed to generate meta filter: %w", err)

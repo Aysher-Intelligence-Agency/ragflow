@@ -113,7 +113,7 @@ class TestChunkServiceBuildChunks:
                     mock_run_chunking.return_value = [{"content_with_weight": "test"}]
 
                     with patch("rag.svr.task_executor_refactor.chunk_service.extract_outline", new_callable=AsyncMock):
-                        with patch.object(service, '_prepare_docs_and_upload', new_callable=AsyncMock) as mock_prepare:
+                        with patch.object(service, "_prepare_docs_and_upload", new_callable=AsyncMock) as mock_prepare:
                             mock_prepare.return_value = [{"id": "chunk_1", "content_with_weight": "test"}]
 
                             await service.build_chunks(b"test binary")
@@ -142,7 +142,7 @@ class TestChunkServiceBuildChunks:
                     mock_run_chunking.return_value = []
 
                     with patch("rag.svr.task_executor_refactor.chunk_service.extract_outline", new_callable=AsyncMock):
-                        with patch.object(service, '_prepare_docs_and_upload', new_callable=AsyncMock) as mock_prepare:
+                        with patch.object(service, "_prepare_docs_and_upload", new_callable=AsyncMock) as mock_prepare:
                             mock_prepare.return_value = [{"id": "chunk_1", "content_with_weight": "test"}]
 
                             with patch("rag.svr.task_executor_refactor.chunk_service.extract_keywords", new_callable=AsyncMock) as mock_extract:
@@ -169,7 +169,7 @@ class TestChunkServiceBuildChunks:
                     mock_run_chunking.return_value = []
 
                     with patch("rag.svr.task_executor_refactor.chunk_service.extract_outline", new_callable=AsyncMock):
-                        with patch.object(service, '_prepare_docs_and_upload', new_callable=AsyncMock) as mock_prepare:
+                        with patch.object(service, "_prepare_docs_and_upload", new_callable=AsyncMock) as mock_prepare:
                             mock_prepare.return_value = [{"id": "chunk_1", "content_with_weight": "test"}]
 
                             with patch("rag.svr.task_executor_refactor.chunk_service.generate_questions", new_callable=AsyncMock) as mock_gen:
@@ -196,7 +196,7 @@ class TestChunkServiceBuildChunks:
                     mock_run_chunking.return_value = []
 
                     with patch("rag.svr.task_executor_refactor.chunk_service.extract_outline", new_callable=AsyncMock):
-                        with patch.object(service, '_prepare_docs_and_upload', new_callable=AsyncMock) as mock_prepare:
+                        with patch.object(service, "_prepare_docs_and_upload", new_callable=AsyncMock) as mock_prepare:
                             mock_prepare.return_value = [{"id": "chunk_1", "content_with_weight": "test"}]
 
                             with patch("rag.svr.task_executor_refactor.chunk_service.apply_tags", new_callable=AsyncMock) as mock_apply:
@@ -206,12 +206,7 @@ class TestChunkServiceBuildChunks:
     @pytest.mark.asyncio
     async def test_build_chunks_with_metadata(self):
         """Test build_chunks triggers metadata generation when configured."""
-        ctx = self._create_mock_context(
-            parser_config={
-                "enable_metadata": True,
-                "metadata": [{"name": "category", "type": "string"}]
-            }
-        )
+        ctx = self._create_mock_context(parser_config={"enable_metadata": True, "metadata": [{"name": "category", "type": "string"}]})
 
         service = ChunkService(ctx=ctx)
 
@@ -228,7 +223,7 @@ class TestChunkServiceBuildChunks:
                     mock_run_chunking.return_value = []
 
                     with patch("rag.svr.task_executor_refactor.chunk_service.extract_outline", new_callable=AsyncMock):
-                        with patch.object(service, '_prepare_docs_and_upload', new_callable=AsyncMock) as mock_prepare:
+                        with patch.object(service, "_prepare_docs_and_upload", new_callable=AsyncMock) as mock_prepare:
                             mock_prepare.return_value = [{"id": "chunk_1", "content_with_weight": "test"}]
 
                             with patch("rag.svr.task_executor_refactor.chunk_service.generate_metadata", new_callable=AsyncMock) as mock_meta:
@@ -264,7 +259,6 @@ class TestChunkServicePrepareDocsAndUpload:
             mock_settings.STORAGE_IMPL.put = MagicMock()
 
             with patch("rag.svr.task_executor_refactor.chunk_service.image2id", new_callable=AsyncMock):
-
                 docs = await service._prepare_docs_and_upload(cks)
 
                 assert len(docs) == 1
@@ -284,7 +278,6 @@ class TestChunkServicePrepareDocsAndUpload:
             mock_settings.STORAGE_IMPL = MagicMock()
 
             with patch("rag.svr.task_executor_refactor.chunk_service.image2id", new_callable=AsyncMock):
-
                 docs = await service._prepare_docs_and_upload(cks)
 
                 assert docs[0].get("pagerank_fea") == 5

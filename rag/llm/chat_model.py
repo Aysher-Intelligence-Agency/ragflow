@@ -415,9 +415,7 @@ class Base(ABC):
                         try:
                             args = json_repair.loads(tc.function.arguments)
                             if not isinstance(args, dict):
-                                raise TypeError(
-                                    f"Tool arguments for {name} must be a JSON object, got {type(args).__name__}"
-                                )
+                                raise TypeError(f"Tool arguments for {name} must be a JSON object, got {type(args).__name__}")
                             if hasattr(self.toolcall_session, "tool_call_async"):
                                 result = await self.toolcall_session.tool_call_async(name, args)
                             else:
@@ -521,9 +519,7 @@ class Base(ABC):
                         try:
                             args = json_repair.loads(tc.function.arguments)
                             if not isinstance(args, dict):
-                                raise TypeError(
-                                    f"Tool arguments for {name} must be a JSON object, got {type(args).__name__}"
-                                )
+                                raise TypeError(f"Tool arguments for {name} must be a JSON object, got {type(args).__name__}")
                             if hasattr(self.toolcall_session, "tool_call_async"):
                                 result = await self.toolcall_session.tool_call_async(name, args)
                             else:
@@ -1532,11 +1528,15 @@ class LiteLLMBase(ABC):
         return msg
 
     def _verbose_tool_use(self, name, args, res):
-        return "<tool_call>" + json.dumps(
-            {"name": name, "args": args, "result": str(res) if isinstance(res, Exception) else res},
-            ensure_ascii=False,
-            indent=2,
-        ) + "</tool_call>"
+        return (
+            "<tool_call>"
+            + json.dumps(
+                {"name": name, "args": args, "result": str(res) if isinstance(res, Exception) else res},
+                ensure_ascii=False,
+                indent=2,
+            )
+            + "</tool_call>"
+        )
 
     def _append_history(self, hist, tool_call, tool_res, reasoning_content=None):
         assistant_msg = {
@@ -1944,7 +1944,7 @@ class LiteLLMBase(ABC):
         if self.provider == SupportedLiteLLMProvider.Ollama and self.api_key and "Authorization" not in extra_headers:
             extra_headers["Authorization"] = f"Bearer {self.api_key}"
         # MiniMax requires GroupId as a query parameter for API authentication
-        if self.provider == SupportedLiteLLMProvider.MiniMax and hasattr(self, 'group_id') and self.group_id:
+        if self.provider == SupportedLiteLLMProvider.MiniMax and hasattr(self, "group_id") and self.group_id:
             api_base = completion_args.get("api_base", self.base_url)
             separator = "&" if "?" in api_base else "?"
             completion_args["api_base"] = f"{api_base}{separator}GroupId={self.group_id}"

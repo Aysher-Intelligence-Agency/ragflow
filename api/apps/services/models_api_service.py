@@ -89,9 +89,7 @@ def _get_model_info(tenant_id: str, default_model: str, model_type: str):
         return None
 
     # Check if model is enabled (no TenantModel record or status != inactive means enabled)
-    model_entity = TenantModelService.get_by_provider_id_and_instance_id_and_model_type_and_model_name(
-        provider_obj.id, instance_obj.id, model_type, model_name
-    )
+    model_entity = TenantModelService.get_by_provider_id_and_instance_id_and_model_type_and_model_name(provider_obj.id, instance_obj.id, model_type, model_name)
     enable = model_entity is None or model_entity.status != ActiveStatusEnum.INACTIVE.value
 
     if not enable:
@@ -99,12 +97,12 @@ def _get_model_info(tenant_id: str, default_model: str, model_type: str):
 
     if model_entity:
         return {
-        "model_provider": provider_name,
-        "model_instance": instance_name,
-        "model_name": model_name,
-        "model_type": model_type,
-        "enable": enable,
-    }
+            "model_provider": provider_name,
+            "model_instance": instance_name,
+            "model_name": model_name,
+            "model_type": model_type,
+            "enable": enable,
+        }
 
     # Check if model is in the LLM factory info
     factory_info = [f for f in (FACTORY_LLM_INFOS or []) if f["name"] == provider_name]
@@ -151,10 +149,7 @@ def _check_model_available(tenant_id: str, provider_name: str, instance_name: st
 
     compose_profiles = os.getenv("COMPOSE_PROFILES", "")
     is_tei_builtin_embedding = (
-            model_type == LLMType.EMBEDDING.value
-            and "tei-" in compose_profiles
-            and model_name == os.getenv("TEI_MODEL", "")
-            and (provider_name == "Builtin" or provider_name is None)
+        model_type == LLMType.EMBEDDING.value and "tei-" in compose_profiles and model_name == os.getenv("TEI_MODEL", "") and (provider_name == "Builtin" or provider_name is None)
     )
     if is_tei_builtin_embedding:
         return True, None
@@ -175,9 +170,7 @@ def _check_model_available(tenant_id: str, provider_name: str, instance_name: st
         return False, f"Provider '{provider_name}' not found in factory info"
     model_type = MODEL_TAG_TO_TYPE.get(model_type, model_type)
     # Check if model is disabled
-    model_entity = TenantModelService.get_by_provider_id_and_instance_id_and_model_type_and_model_name(
-        provider_obj.id, instance_obj.id, model_type, model_name
-    )
+    model_entity = TenantModelService.get_by_provider_id_and_instance_id_and_model_type_and_model_name(provider_obj.id, instance_obj.id, model_type, model_name)
     if model_entity:
         if model_entity.status == "inactive":
             return False, f"Model '{model_name}' isn't available"
@@ -262,7 +255,7 @@ def set_tenant_default_models(tenant_id: str, model_provider: str, model_instanc
     return True, "success"
 
 
-def list_tenant_added_models(tenant_id: str, model_type_filter: str=None):
+def list_tenant_added_models(tenant_id: str, model_type_filter: str = None):
     """
     List all added models for a tenant.
 
@@ -327,14 +320,16 @@ def list_tenant_added_models(tenant_id: str, model_type_filter: str=None):
                 if not model_types:
                     continue
 
-                added_models.append({
-                    "model_type": model_types,
-                    "name": llm["llm_name"],
-                    "provider_id": factory_instance.provider_id,
-                    "provider_name": provider_info_map[factory_instance.provider_id].provider_name if provider_info_map.get(factory_instance.provider_id) else "",
-                    "instance_id": factory_instance.id,
-                    "instance_name": factory_instance.instance_name
-                })
+                added_models.append(
+                    {
+                        "model_type": model_types,
+                        "name": llm["llm_name"],
+                        "provider_id": factory_instance.provider_id,
+                        "provider_name": provider_info_map[factory_instance.provider_id].provider_name if provider_info_map.get(factory_instance.provider_id) else "",
+                        "instance_id": factory_instance.id,
+                        "instance_name": factory_instance.instance_name,
+                    }
+                )
 
     manual_added_model_record_keys = list(set(model_record_map.keys()) - set(model_key_in_factory))
     if manual_added_model_record_keys:
@@ -348,13 +343,15 @@ def list_tenant_added_models(tenant_id: str, model_type_filter: str=None):
             if not model_types:
                 continue
 
-            added_models.append({
-                "model_type": model_types,
-                "name": model_name,
-                "provider_id": provider_id,
-                "provider_name": provider_info_map[provider_id].provider_name if provider_info_map.get(provider_id) else "",
-                "instance_id": instance_id,
-                "instance_name": instance_info_map[instance_id].instance_name if instance_info_map.get(instance_id) else ""
-            })
+            added_models.append(
+                {
+                    "model_type": model_types,
+                    "name": model_name,
+                    "provider_id": provider_id,
+                    "provider_name": provider_info_map[provider_id].provider_name if provider_info_map.get(provider_id) else "",
+                    "instance_id": instance_id,
+                    "instance_name": instance_info_map[instance_id].instance_name if instance_info_map.get(instance_id) else "",
+                }
+            )
 
     return True, added_models

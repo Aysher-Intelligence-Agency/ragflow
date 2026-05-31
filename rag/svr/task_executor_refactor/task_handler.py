@@ -31,10 +31,7 @@ from typing import Callable, Dict, List, Optional
 from api.db.services.document_service import DocumentService
 from api.db.services.knowledgebase_service import KnowledgebaseService
 from api.db.joint_services.memory_message_service import handle_save_to_memory_task
-from api.db.joint_services.tenant_model_service import (
-    get_tenant_default_model_by_type,
-    get_model_config_from_provider_instance
-)
+from api.db.joint_services.tenant_model_service import get_tenant_default_model_by_type, get_model_config_from_provider_instance
 from api.db.services.llm_service import LLMBundle
 from api.db.services.task_service import GRAPH_RAPTOR_FAKE_DOC_ID
 from common.constants import LLMType
@@ -108,8 +105,7 @@ class TaskHandler:
                         )
                         self._task_context.recording_context.save_func_return_value("docStoreConn.delete", ret)
                 except Exception as e:
-                    logging.exception(
-                        f"Remove doc({task_doc_id}) from docStore failed when task({task_id}) canceled, exception: {e}")
+                    logging.exception(f"Remove doc({task_doc_id}) from docStore failed when task({task_id}) canceled, exception: {e}")
 
     async def handle(self) -> None:
         """Handle a document processing task."""
@@ -165,7 +161,6 @@ class TaskHandler:
             else:
                 await self._run_standard_chunking(embedding_model)
 
-
     @classmethod
     def _get_vector_size(cls, embedding_model: LLMBundle) -> int:
         """Get vector size from embedding model."""
@@ -212,18 +207,14 @@ class TaskHandler:
 
         try:
             if task_embedding_id:
-                embd_model_config = get_model_config_from_provider_instance(
-                    task_tenant_id, LLMType.EMBEDDING, task_embedding_id
-                )
+                embd_model_config = get_model_config_from_provider_instance(task_tenant_id, LLMType.EMBEDDING, task_embedding_id)
             else:
-                embd_model_config = get_tenant_default_model_by_type(
-                    task_tenant_id, LLMType.EMBEDDING
-                )
+                embd_model_config = get_tenant_default_model_by_type(task_tenant_id, LLMType.EMBEDDING)
             embedding_model = LLMBundle(task_tenant_id, embd_model_config, lang=task_language)
             vts, _ = embedding_model.encode(["ok"])
             return embedding_model
         except Exception as e:
-            error_message = f'Fail to bind embedding model: {str(e)}'
+            error_message = f"Fail to bind embedding model: {str(e)}"
             ctx.progress_cb(-1, msg=error_message)
             logging.exception(error_message)
             raise
@@ -246,19 +237,21 @@ class TaskHandler:
 
         kb_parser_config = kb.parser_config
         if not kb_parser_config.get("raptor", {}).get("use_raptor", False):
-            kb_parser_config.update({
-                "raptor": {
-                    "use_raptor": True,
-                    "prompt": "Please summarize the following paragraphs. Be careful with the numbers, do not make things up. Paragraphs as following:\n      {cluster_content}\nThe above is the content you need to summarize.",
-                    "max_token": 256,
-                    "threshold": 0.1,
-                    "max_cluster": 64,
-                    "random_seed": 0,
-                    "scope": "file",
-                    "clustering_method": "gmm",
-                    "tree_builder": "raptor",
-                },
-            })
+            kb_parser_config.update(
+                {
+                    "raptor": {
+                        "use_raptor": True,
+                        "prompt": "Please summarize the following paragraphs. Be careful with the numbers, do not make things up. Paragraphs as following:\n      {cluster_content}\nThe above is the content you need to summarize.",
+                        "max_token": 256,
+                        "threshold": 0.1,
+                        "max_cluster": 64,
+                        "random_seed": 0,
+                        "scope": "file",
+                        "clustering_method": "gmm",
+                        "tree_builder": "raptor",
+                    },
+                }
+            )
             if ctx.write_interceptor:
                 update_result = ctx.write_interceptor.intercept("KnowledgebaseService.update_by_id")
             else:
@@ -269,11 +262,8 @@ class TaskHandler:
                 return
 
         # Bind LLM for raptor
-        chat_model_config = get_model_config_from_provider_instance(
-            task_tenant_id, LLMType.CHAT, kb_task_llm_id
-        )
+        chat_model_config = get_model_config_from_provider_instance(task_tenant_id, LLMType.CHAT, kb_task_llm_id)
         with LLMBundle(task_tenant_id, chat_model_config, lang=ctx.language) as chat_model:
-
             # Run RAPTOR
             raptor_service = RaptorService(ctx=ctx)
 
@@ -302,9 +292,7 @@ class TaskHandler:
                 # Cleanup stale RAPTOR chunks
                 cleaned_chunks = 0
                 for cleanup_doc_id, keep_method in raptor_cleanup_chunks:
-                    ret = await self._delete_raptor_chunks(
-                        cleanup_doc_id, task_tenant_id, task_dataset_id, keep_method
-                    )
+                    ret = await self._delete_raptor_chunks(cleanup_doc_id, task_tenant_id, task_dataset_id, keep_method)
                     cleaned_chunks += ret
 
                 if cleaned_chunks:
@@ -319,10 +307,7 @@ class TaskHandler:
             ctx.recording_context.record("task_status", "completed")
             ctx.progress_cb(prog=1.0, msg="RAPTOR done")
 
-    async def _run_graphrag(
-        self,
-        embedding_model: LLMBundle
-    ) -> None:
+    async def _run_graphrag(self, embedding_model: LLMBundle) -> None:
         """Run GraphRAG."""
         ctx = self._task_context
         task_tenant_id = ctx.tenant_id
@@ -337,13 +322,15 @@ class TaskHandler:
 
         kb_parser_config = kb.parser_config
         if not kb_parser_config.get("graphrag", {}).get("use_graphrag", False):
-            kb_parser_config.update({
-                "graphrag": {
-                    "use_graphrag": True,
-                    "entity_types": ["organization", "person", "geo", "event", "category"],
-                    "method": "light",
+            kb_parser_config.update(
+                {
+                    "graphrag": {
+                        "use_graphrag": True,
+                        "entity_types": ["organization", "person", "geo", "event", "category"],
+                        "method": "light",
+                    }
                 }
-            })
+            )
             if ctx.write_interceptor:
                 update_result = ctx.write_interceptor.intercept("KnowledgebaseService.update_by_id")
             else:
@@ -354,11 +341,8 @@ class TaskHandler:
 
         graphrag_conf = kb_parser_config.get("graphrag", {})
         start_ts = timer()
-        chat_model_config = get_model_config_from_provider_instance(
-            task_tenant_id, LLMType.CHAT, kb_task_llm_id
-        )
+        chat_model_config = get_model_config_from_provider_instance(task_tenant_id, LLMType.CHAT, kb_task_llm_id)
         with LLMBundle(task_tenant_id, chat_model_config, lang=task_language) as chat_model:
-
             with_resolution = graphrag_conf.get("resolution", False)
             with_community = graphrag_conf.get("community", False)
 
@@ -379,10 +363,7 @@ class TaskHandler:
             ctx.recording_context.record("graphrag_result", result)
             ctx.progress_cb(prog=1.0, msg="Knowledge Graph done ({:.2f}s)".format(timer() - start_ts))
 
-    async def _run_standard_chunking(
-        self,
-        embedding_model: LLMBundle
-    ) -> None:
+    async def _run_standard_chunking(self, embedding_model: LLMBundle) -> None:
         """Run standard chunking pipeline."""
         ctx = self._task_context
         task_id = ctx.id
@@ -391,7 +372,7 @@ class TaskHandler:
         task_doc_id = ctx.doc_id
         task_start_ts = timer()
         doc_task_llm_id = ctx.parser_config.get("llm_id") or ctx.llm_id
-        ctx.raw_task['llm_id'] = doc_task_llm_id
+        ctx.raw_task["llm_id"] = doc_task_llm_id
 
         # Build chunks
         start_ts = timer()
@@ -409,7 +390,7 @@ class TaskHandler:
         logging.info("Build document {}: {:.2f}s".format(ctx.name, timer() - start_ts))
 
         if not chunks:
-            ctx.progress_cb(1., msg=f"No chunk built from {ctx.name}")
+            ctx.progress_cb(1.0, msg=f"No chunk built from {ctx.name}")
             return
 
         ctx.progress_cb(msg="Generate {} chunks".format(len(chunks)))
@@ -418,9 +399,7 @@ class TaskHandler:
         start_ts = timer()
         embedding_service = EmbeddingService(ctx=ctx)
         try:
-            token_count, vector_size = embedding_service.embed_chunks(
-                chunks, embedding_model, ctx.parser_config
-            )
+            token_count, vector_size = embedding_service.embed_chunks(chunks, embedding_model, ctx.parser_config)
         except TaskCanceledException:
             raise
         except Exception as e:
@@ -450,9 +429,7 @@ class TaskHandler:
             ctx.progress_cb(-1, msg="Task has been canceled.")
             return
 
-        insert_result = await chunk_service.insert_chunks(
-            task_id, task_tenant_id, task_dataset_id, chunks
-        )
+        insert_result = await chunk_service.insert_chunks(task_id, task_tenant_id, task_dataset_id, chunks)
 
         if not insert_result:
             ctx.recording_context.record("insertion_result", "failed")
@@ -484,13 +461,7 @@ class TaskHandler:
         ctx.recording_context.record("task_status", "completed")
         ctx.progress_cb(prog=1.0, msg="Task done ({:.2f}s)".format(task_time_cost))
 
-        logging.info(
-            "Chunk doc({}), page({}-{}), chunks({}), token({}), elapsed:{:.2f}".format(
-                ctx.name, ctx.from_page, ctx.to_page,
-                len(chunks), token_count, task_time_cost
-            )
-        )
-
+        logging.info("Chunk doc({}), page({}-{}), chunks({}), token({}), elapsed:{:.2f}".format(ctx.name, ctx.from_page, ctx.to_page, len(chunks), token_count, task_time_cost))
 
     async def _process_toc_thread(self, toc_thread):
         try:
@@ -505,6 +476,7 @@ class TaskHandler:
     @classmethod
     async def _get_storage_binary(cls, bucket: str, name: str) -> bytes:
         from common import settings
+
         """Get binary from storage."""
         return await thread_pool_exec(settings.STORAGE_IMPL.get, bucket, name)
 
@@ -512,23 +484,21 @@ class TaskHandler:
     def _build_toc(cls, ctx: TaskContext, docs: List[Dict], progress_cb: Callable) -> Optional[Dict]:
         """Build table of contents."""
         progress_cb(msg="Start to generate table of content ...")
-        chat_model_config = get_model_config_from_provider_instance(
-            ctx.tenant_id, LLMType.CHAT, ctx.llm_id
-        )
+        chat_model_config = get_model_config_from_provider_instance(ctx.tenant_id, LLMType.CHAT, ctx.llm_id)
         with LLMBundle(ctx.tenant_id, chat_model_config, lang=ctx.language) as chat_mdl:
-
-            docs = sorted(docs, key=lambda d: (
-                d.get("page_num_int", 0)[0] if isinstance(d.get("page_num_int", 0), list) else d.get("page_num_int", 0),
-                d.get("top_int", 0)[0] if isinstance(d.get("top_int", 0), list) else d.get("top_int", 0)
-            ))
+            docs = sorted(
+                docs,
+                key=lambda d: (
+                    d.get("page_num_int", 0)[0] if isinstance(d.get("page_num_int", 0), list) else d.get("page_num_int", 0),
+                    d.get("top_int", 0)[0] if isinstance(d.get("top_int", 0), list) else d.get("top_int", 0),
+                ),
+            )
 
             # NOTE: asyncio.run() creates a new event loop in the worker thread
             # (this method is called via asyncio.to_thread), which is the
             # intended pattern for bridging sync -> async in a thread context.
-            toc: list[dict] = asyncio.run(
-                run_toc_from_text([d["content_with_weight"] for d in docs], chat_mdl, progress_cb)
-            )
-            logging.info("------------ T O C -------------\n" + json.dumps(toc, ensure_ascii=False, indent='  '))
+            toc: list[dict] = asyncio.run(run_toc_from_text([d["content_with_weight"] for d in docs], chat_mdl, progress_cb))
+            logging.info("------------ T O C -------------\n" + json.dumps(toc, ensure_ascii=False, indent="  "))
 
             for ii, item in enumerate(toc):
                 try:
@@ -556,19 +526,17 @@ class TaskHandler:
 
             if toc:
                 import copy
+
                 d = copy.deepcopy(docs[-1])
                 d["content_with_weight"] = json.dumps(toc, ensure_ascii=False)
                 d["toc_kwd"] = "toc"
                 d["available_int"] = 0
                 d["page_num_int"] = [100000000]
-                d["id"] = xxhash.xxh64(
-                    (d["content_with_weight"] + str(d["doc_id"])).encode("utf-8", "surrogatepass")).hexdigest()
+                d["id"] = xxhash.xxh64((d["content_with_weight"] + str(d["doc_id"])).encode("utf-8", "surrogatepass")).hexdigest()
                 return d
             return None
 
-    async def _delete_raptor_chunks(
-        self, doc_id: str, tenant_id: str, kb_id: str, keep_method: Optional[str]
-    ) -> int:
+    async def _delete_raptor_chunks(self, doc_id: str, tenant_id: str, kb_id: str, keep_method: Optional[str]) -> int:
         """Delete RAPTOR chunks."""
         if self._task_context.write_interceptor:
             return self._task_context.write_interceptor.intercept("delete_raptor_chunks")

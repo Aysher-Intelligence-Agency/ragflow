@@ -221,12 +221,7 @@ def add_model_instance(auth):
         pytest.exit(f"Critical error in add model provider: {add_provider_res.get('message')}")
 
     add_instance_api = HOST_ADDRESS + "/api/v1/providers/ZHIPU-AI/instances"
-    add_instance_response = requests.post(url=add_instance_api, headers=authorization, json={
-        "instance_name": "CI",
-        "api_key": ZHIPU_AI_API_KEY,
-        "region": "default",
-        "base_url": ""
-    })
+    add_instance_response = requests.post(url=add_instance_api, headers=authorization, json={"instance_name": "CI", "api_key": ZHIPU_AI_API_KEY, "region": "default", "base_url": ""})
     add_instance_res = add_instance_response.json()
     if add_instance_res.get("code") != 0:
         pytest.exit(f"Critical error in add model instance: {add_instance_res.get('message')}")
@@ -257,28 +252,14 @@ def set_tenant_info(auth):
     url = HOST_ADDRESS + "/api/v1/models/default"
     authorization = {"Authorization": auth}
     # set chat model
-    set_default_llm_response = requests.patch(
-        url=url,
-        headers=authorization,
-        json={
-            "model_provider": "ZHIPU-AI",
-            "model_instance": "CI",
-            "model_type": "chat",
-            "model_name": "glm-4-flash"
-        })
+    set_default_llm_response = requests.patch(url=url, headers=authorization, json={"model_provider": "ZHIPU-AI", "model_instance": "CI", "model_type": "chat", "model_name": "glm-4-flash"})
     llm_res = set_default_llm_response.json()
     if llm_res.get("code") != 0:
         raise Exception(llm_res.get("message"))
     # set embedding model
     set_default_embedding_response = requests.patch(
-        url=url,
-        headers=authorization,
-        json={
-            "model_provider": "Builtin",
-            "model_instance": "Local",
-            "model_type": "embedding",
-            "model_name": "BAAI/bge-small-en-v1.5"
-        })
+        url=url, headers=authorization, json={"model_provider": "Builtin", "model_instance": "Local", "model_type": "embedding", "model_name": "BAAI/bge-small-en-v1.5"}
+    )
     embd_res = set_default_embedding_response.json()
     if embd_res.get("code") != 0:
         raise Exception(embd_res.get("message"))

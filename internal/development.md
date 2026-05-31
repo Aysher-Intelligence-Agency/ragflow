@@ -70,7 +70,7 @@ Type \? for help, \q to quit
 RAGFlow(user)> REGISTER USER 'aaa@aaa.com' AS 'aaa' PASSWORD 'aaa';
 Register successfully
 RAGFlow(user)> login user 'aaa@aaa.com';
-password for aaa@aaa.com: Password: 
+password for aaa@aaa.com: Password:
 Login user aaa@aaa.com successfully
 RAGFlow(user)> logout;
 SUCCESS
@@ -454,7 +454,7 @@ DELETE METADATA OF DOCUMENT 'bbe55942535e11f1bc5184ba59049aa3'
 
 - Delete metadata keys of a document
 ```
-DELETE METADATA OF DOCUMENT 'bbe55942535e11f1bc5184ba59049aa3' KEYS '["key1", "key2"]'     
+DELETE METADATA OF DOCUMENT 'bbe55942535e11f1bc5184ba59049aa3' KEYS '["key1", "key2"]'
 ```
 
 - Drop metadata store

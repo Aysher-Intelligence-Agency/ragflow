@@ -80,8 +80,7 @@ def _dashscope_native_http_api_url(base_url: str | None) -> str | None:
         )
         return resolved
     logger.warning(
-        "DashScope Tongyi-Qianwen embedding: base_url is set but not recognized as a DashScope host; "
-        "using SDK default endpoint (%s)",
+        "DashScope Tongyi-Qianwen embedding: base_url is set but not recognized as a DashScope host; using SDK default endpoint (%s)",
         safe,
     )
     return None

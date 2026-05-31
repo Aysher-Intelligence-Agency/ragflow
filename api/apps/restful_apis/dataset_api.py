@@ -526,7 +526,7 @@ async def search(tenant_id, dataset_id):
     req, err = await validate_and_parse_json_request(request, SearchDatasetReq)
     if err is not None:
         return get_error_argument_result(err)
-    req['dataset_ids'] = [dataset_id]
+    req["dataset_ids"] = [dataset_id]
     try:
         success, result = await dataset_api_service.search_datasets(tenant_id, req)
         if success:

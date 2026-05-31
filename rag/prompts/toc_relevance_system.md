@@ -115,4 +115,3 @@ Output:
   {"level": 2, "title": "Thermodynamics", "score": 5},
   {"level": 3, "title": "Entropy and Heat Transfer", "score": 5}
 ]
-

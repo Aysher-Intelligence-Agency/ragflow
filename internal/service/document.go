@@ -282,7 +282,7 @@ func (s *DocumentService) ParseDocuments(datasetID, userID string, docIDs []stri
 		}
 
 		// Send task to message queue
-		
+
 	}
 
 	common.Info(fmt.Sprintf("parse documents, dataset: %s, documents: %v", datasetID, docIDs))

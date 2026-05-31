@@ -53,6 +53,7 @@ class TestTaskHandlerHandleTask:
     async def test_handle_task_cleanup_on_cancel(self):
         """Test handle_task cleans up docStore when canceled."""
         from common import settings
+
         mock_doc_store = MagicMock()
         mock_doc_store.index_exist = MagicMock(return_value=True)
         mock_doc_store.delete = MagicMock(return_value=None)
@@ -217,7 +218,7 @@ class TestTaskHandlerHandle:
 
         await handler.handle()
         # Should not call _run_standard_chunking when model is None
-        assert not hasattr(handler, '_run_standard_chunking_called')
+        assert not hasattr(handler, "_run_standard_chunking_called")
 
 
 class TestTaskHandlerGetVectorSize:
